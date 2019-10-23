@@ -75,12 +75,11 @@ time /tmp/pow < $1.in
 
 \subsection*{Debug Code}
 \begin{minted}{cpp}
-#define fi first
-#define se second
-#define pb push_back
+#define sz(x) ((int)(x).size())
 #define rep(i, e) for (int i = 0, _##i = (e); i < _##i; i++)
 #define repp(i, s, e) for (int i = (s), _##i = (e); i < _##i; i++)
 #define repr(i, s, e) for (int i = (s)-1, _##i = (e); i >= _##i; i--)
+#define repi(i, x) for (auto &i : (x))
 // using namespace std;
 using ll = long long;
 using pii = pair<int, int>;
@@ -134,7 +133,10 @@ template<class TH, class... TA> void _dbg(const char *sdbg, TH h, TA... a) {
     \item $ \sum_{n} \binom{m+n-1}{n} x^n = (1-x)^{-m}$ (Multiset coefficient)
 \end{itemize}
 \subsubsection{Calculus}
-\added
+\begin{itemize}
+    \item $\int_{a}^{b} f(x)\ dx = \frac{b-a}{6}\left[f(a) + 4f(\frac{a+b}{2}) + f(b)\right]$ (Simpson's Rule)
+    \item $\int u'v\ dx = uv - \int uv'\ dx$ (Integration by parts)
+\end{itemize}
 \subsubsection{Gaussian Elimination}
 \added...?
 \subsection{Number Theory}
