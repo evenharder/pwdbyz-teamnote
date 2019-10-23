@@ -622,16 +622,33 @@ vector<int> manacher(const string& s) {
 
 \subsection{Z Algorithm}
 \begin{minted}{cpp}
-vector<int> z_algo(const string& s) {
-   vector<int> z(s.length());
-    int r = -1, p = -1;
-    for(int i=1;i<s.length();i++) {
-        if(i <= r) z[i] = min(r-i, z[i-p]);
-        while(i+z[i]<s.length() && s[i+z[i]] == s[z[i]]) z[i]++;
-        if(r > i+z[i]) r = i+z[i], p = i;
+// 0-base
+// input :  a b c a b a b c a
+// output : 9 0 0 2 0 4 0 0 1 
+
+vector<int> z_algo(const string &s) {
+    int l = 0, r = 0, N = sz(s);
+    vector<int> Z(N);
+    Z[0] = N;
+    repp(i, 1, N) {
+        if (i > r) {
+            l = r = i;
+            while(r < N and s[r] == s[r-l]) r++;
+            r--;
+            Z[i] = r-l+1;
+        } else {
+            int k = i-l;
+            if (Z[k] < r-i+1) Z[i] = Z[k];
+            else {
+                l = i;
+                while(r < N and s[r] == s[r-l]) r++;
+                r--;
+                Z[i] = r-l+1;
+            }
+        }
     }
-    return z;
-}  
+    return Z;
+}
 \end{minted}
 
 \subsection{Lexicographically Smallest String Rotation}
