@@ -139,7 +139,15 @@ template<class TH, class... TA> void _dbg(const char *sdbg, TH h, TA... a) {
 \added...?
 \subsection{Number Theory}
 \subsubsection{Lattice Points under Line}
-\added...?
+\begin{minted}{cpp}
+// 0 <= x < n, 0 < y <= (a/c)x+(b/c)
+ll calc(ll a,ll b,ll c,ll n){
+    if(!n)return 0;
+    ll tmp=a/c*n*(n-1)/2;
+    tmp+=b/c*n;
+    return tmp+calc(c,(a*n+b)%c,a%c,((a%c)*n+b%c)/c);
+}
+\end{minted}
 \subsubsection{Shanks' Baby-step Giant-step}
 \revised
 \begin{minted}{cpp}
