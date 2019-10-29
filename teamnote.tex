@@ -505,46 +505,52 @@ int main(){
 
 \subsection{Aho-Corasick Algorithm}
 \begin{minted}{cpp}
-namespace aho {
-    const int N = 4000000, C = 2;
-    int trans[N][C];
-    int lst = 1;
-    int fail[N];
-    int term[N];
+namespace aho_corasick {
+    const int MAXN = 100000, MAXC = 26;
+    int trans[MAXN+1][MAXC];
+    int fail[MAXN+1];
+    bool term[MAXN+1];
 
     void build(const vector<string> &v) {
-        rep(i, sz(v)) {
-            int s = 0;
-            repi(j, v[i]) {
-                int &t = trans[s][j=='o'];
-                if (!t) t = lst++;
-                s = t;
+        setz(trans), setz(fail), setz(term);
+        int cnode = 1;
+
+        repi(s, v) {
+            int p = 0;
+            repi(j, s) {
+                char c = j-'a';
+                if (!trans[p][c]) trans[p][c] = cnode++;
+                p = trans[p][c];
             }
-            term[s] = i+1;
+            term[p] = true;
         }
 
-        queue<int> q; rep(i, C) if (trans[0][i]) q.push(trans[0][i]);
-        while(sz(q) > 0) {
+        queue<int> q; rep(i, MAXC) if (trans[0][i]) q.push(trans[0][i]);
+        while(!q.empty()) {
             int t = q.front(); q.pop();
-            rep(i, C) if (trans[t][i]) {
-                int p = fail[t];
-                while(p and !trans[p][i]) p = fail[p];
-                p = trans[p][i];
-                fail[trans[t][i]] = p;
-                assert(term[p] == 0);
-                q.push(trans[t][i]);
+            rep(i, MAXC) {
+                if (trans[t][i]) {
+                    int p = fail[t];
+                    while(p and not trans[p][i]) p = fail[p];
+                    p = trans[p][i];
+                    fail[trans[t][i]] = p;
+                    if (term[p]) term[trans[t][i]] = true;
+                    q.push(trans[t][i]);
+                }
             }
         }
     }
 
-    bool query(string &s){
-	    int p = 0;
-	    for(auto &i : s){
-		    while(p and !trans[p][i]) p = fail[p];
-		    p = trans[p][i];
-		    if(term[p]) return 1;
-	    }
-	    return 0;
+    bool query(string &t) {
+        int p = 0;
+        repi(i, t) {
+            char c = i-'a';
+            while(p and not trans[p][c]) p = fail[p];
+            p = trans[p][c];
+            if (term[p]) return true;
+
+        }
+        return false;
     }
 }
 \end{minted}
