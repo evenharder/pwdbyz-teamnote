@@ -551,13 +551,15 @@ namespace aho {
 
 \subsection{Suffix Array}
 \begin{minted}{cpp}
+// str  : abracadabra
+// SA   : 10 7 0 3 5 8 1 4 6 9 2
+// LCP  : 1 4 1 1 0 3 0 0 0 2
 vector<int> make_sa(const string& s) {
     int n = s.length();
     int lim = max(128, n+1);
-    vector<int> sa(n), g(n+1), ng(n+1);
+    vector<int> sa(n), g(n+1), ng(n+1), cnt(lim), ind(lim+1);
     for(int i=0;i<n;i++) {
-        sa[i] = i;
-        g[i] = s[i];
+        sa[i] = i; g[i] = s[i];
     }
     g[n] = 0;
     for(int t=1;t<s.length();t<<=1)
@@ -565,20 +567,21 @@ vector<int> make_sa(const string& s) {
         auto cmp = [&] (int a, int b) {
             return g[a] != g[b] ? g[a] < g[b] : g[a+t] < g[b+t];
         };
-        vector<int> cnt(lim), ind(lim+1);
-        for(int i=0;i<n;i++) cnt[g[min(i+t, n)]]++;
-        for(int i=1;i<lim;i++) cnt[i] += cnt[i-1];
+        for(int i=0;i<n;i++)    cnt[g[min(i+t, n)]]++;
+        for(int i=1;i<lim;i++)  cnt[i] += cnt[i-1];
         for(int i=n-1;i>=0;i--) ind[--cnt[g[min(i+t, n)]]] = i;
-        for(int i=0;i<lim;i++) cnt[i] = 0;
-        for(int i=0;i<n;i++) cnt[g[i]]++; // same as cnt[g[ind[i]]]++
-        for(int i=1;i<lim;i++) cnt[i] += cnt[i-1];
+        for(int i=0;i<lim;i++)  cnt[i] = 0;
+        for(int i=0;i<n;i++)    cnt[g[i]]++; // same as cnt[g[ind[i]]]++
+        for(int i=1;i<lim;i++)  cnt[i] += cnt[i-1];
         for(int i=n-1;i>=0;i--) sa[--cnt[g[ind[i]]]] = ind[i];
         ng[sa[0]] = 1;
         for(int i=1;i<n;i++) {
-            ng[sa[i]] = ng[sa[i-1]];
-            if(cmp(sa[i-1], sa[i])) ng[sa[i]]++;
+            ng[sa[i]] = ng[sa[i-1]] + cmp(sa[i-1], sa[i]);
         }
         g = ng;
+        
+        fill(cnt.begin(), cnt.end(), 0);
+        fill(ind.begin(), ind.end(), 0);
     }
     return sa;
 }
@@ -600,10 +603,23 @@ vector<int> make_lcp(const string& s, const vector<int>& sa) {
     }
     return lcp;
 }
-/* str  : abracadabra
- * SA   : 10 7 0 3 5 8 1 4 6 9 2
- * LCP  : 1 4 1 1 0 3 0 0 0 2
- */
+\end{minted}
+\subsection{Manacher's Algorithm}
+\begin{minted}{cpp}
+// 0-based
+// s   = # h # e # l # l # o #
+// ret = 0 1 0 1 0 1 2 1 0 1 0
+
+vector<int> manacher(const string& s) {
+    int n = s.size(), r = -1, k = -1;
+    vector<int> p(n);
+    for (int i=0; i<n; i++) {
+        if (i<=r) p[i] = min(r-i, p[2*k-i]);
+        while (i-p[i]-1>=0 and i+p[i]+1<n and s[i-p[i]-1] == s[i+p[i]+1]) p[i]++;
+        if (r < i+p[i]) r = i+p[i], k = i;
+    }
+    return p;
+}
 \end{minted}
 \subsection{Manacher's Algorithm}
 \begin{minted}{cpp}
