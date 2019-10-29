@@ -625,9 +625,9 @@ vector<int> manacher(const string& s) {
 
 \subsection{Z Algorithm}
 \begin{minted}{cpp}
-// 0-base
-// input :  a b c a b a b c a
-// output : 9 0 0 2 0 4 0 0 1 
+// 0-based
+// s   = a b c a b a b c a
+// ret = 9 0 0 2 0 4 0 0 1 
 
 vector<int> z_algo(const string &s) {
     int l = 0, r = 0, N = sz(s);
