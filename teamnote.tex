@@ -1073,48 +1073,57 @@ int centroid(int u, int p, int r) { // r : root
 \section{Data Structure}
 
 \subsection{Persistent Segment Tree}
-\revised
 \begin{minted}{cpp}
-// credit : http://junis3.tistory.com/8
+const MAXN = 1e5 + 10;
+struct node{
+    node *l, *r;
+    int cnt;
+    node () {}  
+} pool[(1 << 17) * 17], *tree_head[MAXN];
 
-const int maxn = 1<<17;
-int root[maxn];
-struct pst {
-    int v[maxn*17], l[maxn*17], r[maxn*17], t;
-    // create root[0]
-    int base(int s, int e) {
-        int k = t++;
-        if (s<e) {
-            int m = (s+e)/2;
-            l[k] = base(s, m);
-            r[k] = base(m+1, e);
-        }
-        return k;
-    }
-    // make tree from root bef, position 'pos' with value 'val'
-    int make(int bef, int s, int e, int pos, int val) {
-        if (pos<s or e<pos) return bef;
-        int k = t++;
-        if (s==e) {
-            v[k] = v[bef] + val;
-        } else {
-            int m = (s+e)/2;
-            l[k] = make(l[bef], s, m, pos, val);
-            r[k] = make(r[bef], m+1, e, pos, val);
-            v[k] = v[l[k]] + v[r[k]];
-        } return k;
-    }
-    // gets sum from root k where index is from l to r (inclusive)
-    int query(int k, int s, int e, int x, int y) {
-        if (x<=s and e<=y) return v[k];
-        else if (e<x or y<s) return 0;
-        else {
-            int m = (s+e)/2;
-            return query(l[k], s, m, x, y) + query(r[k], m+1, e, x, y);
-        }
-    }
-} t;
+int tcnt;
+node* alloc(){
+    memset(pool + tcnt, 0, sizeof(node));
+    return pool + tcnt++;
+}
 
+node * init(int l, int r){
+    node *ret = alloc();
+    if(l != r) {
+        int mid = (l + r) / 2;
+        ret->l = init(l, mid);
+        ret->r = init(mid + 1, r);
+    }
+    return ret;
+}
+
+void update(node * here, node *par, int l, int r, int val){
+    if(l == r) {
+        here->cnt = par->cnt + 1;
+        return;
+    }
+
+    int mid = (l + r) / 2;
+    if(val <= mid){
+        here->l = alloc();
+        here->r = par->r;
+        update(here->l, par->l, l, mid, val);
+    }
+    else {
+        here->l = par->l;
+        here->r = alloc();
+        update(here->r, par->r, mid + 1, r, val);
+    }
+    here->cnt = here->l->cnt + here->r->cnt;
+}
+
+int query(node *node1, node *node2, int l, int r, int k){
+    if(l == r) return l;
+    int ccc = node1->l->cnt - node2->l->cnt;
+    int mid = (l + r) / 2;
+    if(k <= ccc) return query(node1->l, node2->l, l, mid, k);
+    else return query(node1->r, node2->r, mid + 1, r, k - ccc);
+}
 \end{minted}
 
 \subsection{Link-Cut Tree}
