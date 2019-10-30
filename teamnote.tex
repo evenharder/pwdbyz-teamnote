@@ -397,29 +397,54 @@ struct point{
         return P(x*cos(a)-y*sin(a), x*sin(a)+y*cos(a));
     }
 };
+
+int sgn(double x) {return (x > eps) - (x < -eps);}
+typedef point<double> P;
 \end{minted}
-\subsubsection{Sorting Points by Angle}
+\subsection{Distance, Intersection}
+\subsubsection{Point-to-Line}
 \begin{minted}{cpp}
-// credit : http://koosaga.com/97
-auto angle_sort = [&](const point &a, const point &b){
-    if((a > point(0, 0)) ^ (b > point(0, 0))) return a > b;
-    if(a / b != 0) return a / b > 0;
-    return a.dist() < b.dist(); // norm
-}; // clockwise sort
+double lineDist(P a, P b, P p) {
+    return ((b-a)/(p-a))/(b-a).dist(); // a->b : left (+), right : (-);
+}
 \end{minted}
-\subsection{Intersections}
-벡터 내적 외적 이용하면 생각보다 간단 / 선분은 예외처리가 좀 많음
-\added
-\subsubsection{Line-Line intersection}
+\subsubsection{Point-to-Segment}
+\begin{minted}{cpp}
+double segDist(P s, P e, P p) {
+    if(s == e) return (p-s).dist(); // mind the eps
+    double d = (e-s).dist2(), t = min(d, max(.0, (p-s)*(e-s)));
+    return ((p-s).mult(d)-(e-s).mult(t)).dist() / d;
+}
+\end{minted}
+\subsubsection{Line intersection}
+\begin{minted}{cpp}
+template<class P>
+pair<int, P> lineInter(P a, P b, P c, P d){
+    if((b-a)/(d-c) == 0) // parallel, mind the eps
+        return {-((b-a)/(c-a) == 0), a};
+    double p = (d-c)/(a-c), q = (d-c)/(b-c);
+    return {(a.mult(p) - b.mult(q)).mult(q-p)};
+} // 1,0,-1(inf) : inter
+\end{minted}
+\subsubsection{Segment Intersection}
+\begin{minted}{cpp}
+bool onSegment(P s, P e, P p) {return segDist(s, e, p) < eps;}
 
-\subsubsection{Line-Segment intersection}
-
-\subsubsection{Segment-Segment Intersection}
-
+template<class P> vector<P> segInter(P a, P b, P c, P d){
+    double  oa = (d-c)/(a-c),   ob = (d-c)/(b-c),
+            oc = (b-a)/(c-a),   od = (b-a)/(d-a);
+    if(sgn(oa)*sgn(ob) < 0 && sgn(oc)*sgn(od) < 0)
+        return {(a.mult(ob) - b.mult(oa)).mult(ob-oa)};
+    set<P> S;
+    if(onSegment(c, d, a)) S.insert(a);
+    if(onSegment(c, d, b)) S.insert(b);
+    if(onSegment(a, b, c)) S.insert(c);
+    if(onSegment(a, b, d)) S.insert(d);
+    return vector<P>(S.begin(), S.end());
+}
+\end{minted}
 \subsubsection{Circle-Line Intersection}
 
-\subsection{Projection, Reflection}
-\added
 \subsection{Convex Hull}
 \begin{minted}{cpp}
 vector<pll> get_CV(vector<pll> V){
@@ -471,15 +496,22 @@ void rotating_calipers(vector<pll> CV){
     printf("%lld %lld %lld %lld\n", CV[ind1].first, CV[ind1].second, CV[ind2].first, CV[ind2].second);
 }
 \end{minted}
-
+\subsection{Sorting Points by Angle}
+\begin{minted}{cpp}
+// credit : http://koosaga.com/97
+auto angle_sort = [&](const point &a, const point &b){
+    if((a > point(0, 0)) ^ (b > point(0, 0))) return a > b;
+    if(a / b != 0) return a / b > 0;
+    return a.dist() < b.dist(); // norm
+}; // clockwise sort
+\end{minted}
 \subsection{Smallest Enclosing Circle}
 \begin{minted}{cpp}
 //Prove By Solving - https://www.acmicpc.net/problem/11930
 int main(){
     scanf("%d", &N);
-
     for(int i = 1 ; i <= N ; i++) scanf("%lf%lf%lf", &A[i].x, &A[i].y, &A[i].z);
-
+    
     int t = 70000;
     double rate = 1.0;
     point cur = (point){0, 0, 0};
@@ -489,12 +521,11 @@ int main(){
         cur = cur + (A[ind] - cur) * rate;
         rate *= 0.99;
     }
-
     double r = 0;
     for(int i = 1 ; i <= N ; i++) r = max(r, (A[i] - cur) * (A[i] - cur));
     cout << sqrt(r);
     return 0;
-}
+} // Non-deterministic, deterministic O(n lg n) requires Voronoi diagram
 \end{minted}
 \subsection{Polygon Area}
 \added
