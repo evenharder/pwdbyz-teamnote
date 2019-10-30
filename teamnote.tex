@@ -759,7 +759,17 @@ void Eulerian(int curr){
 \section{Network Flow}
 
 \subsection{Theorems}
-\added LR-flow and bunch of theories?
+\noindent\textbf{Max-flow Min-cut theorem} : 정점 $ s $에서 정점 $ t $까지 흐를 수 있는 최대 유량(max-flow)은 정점 $ s $와 정점 $ t $를 분리하는 간선들의 가중치 합(min-cut)과 같다.\\
+\textbf{Vertex cover} : 어떤 그래프의 정점의 집합 $ S $에 대해 그래프의 모든 간선이 $ S $의 원소 중 최소 하나와 연결되어 있을 때, $ S $를 해당 그래프의 vertex cover라고 하며, minimum vertex cover는 최소 개수의 정점을 사용한 vertex cover이다.\\
+\textbf{Independent set} : 어떤 그래프의 정점의 집합 $ S $에 대해 $ S $의 서로 다른 두 정점을 연결하는 간선이 없을 때, $ S $를 해당 그래프의 independent set이라고 하며, maximum independent set은 최대 개수의 정점을 사용한 independent set이다.\\
+\textbf{Matching (independent edge set)} : 어떤 그래프의 간선의 집합 $ S $에 대해 $ S $의 서로 다른 두 간선이 공통된 정점을 가지지 않을 때, $ S $를 해당 그래프의 matching이라고 하며, maximum matching은 최대 개수의 간선을 사용한 matching이다.\\
+\textbf{K\"onig's theorem} : 이분 그래프의 maximum matching의 크기는 minimum vertex cover의 것과 같다.\\
+\textbf{Dinic's Algorithm} : 시간 복잡도 $O(V^2E)$, unit capacity에서는 $\min(V^{2/3}E, E^{3/2})$.\\
+\textbf{Circulation Problem} : 새로운 source/sink $s_{n}$, $t_{n}$를 만들어서 다음과 같이 간선을 추가하고 $maxflow(s_{n} \to t_{n}) = \sum l_i$인지 확인, 이후 $s \to t$로 maxflow
+\begin{itemize}
+\item $s_{n} \to b\ (l)$, $a \to t_{n}\ (l)$, $a \to b\ (r-l)$, $t \to s\ (\infty)$
+\end{itemize}
+
 \subsection {Dinic's Algorithm}
 \begin{minted}{cpp}
 const int INF = 1e9;
