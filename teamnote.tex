@@ -423,7 +423,7 @@ pair<int, P> lineInter(P a, P b, P c, P d){
     if((b-a)/(d-c) == 0) // parallel, mind the eps
         return {-((b-a)/(c-a) == 0), a};
     double p = (d-c)/(a-c), q = (d-c)/(b-c);
-    return {(a.mult(p) - b.mult(q)).mult(q-p)};
+    return {(a.mult(p) - b.mult(q)).mult(1/(q-p))};
 } // 1,0,-1(inf) : inter
 \end{minted}
 \subsubsection{Segment Intersection}
@@ -434,7 +434,7 @@ template<class P> vector<P> segInter(P a, P b, P c, P d){
     double  oa = (d-c)/(a-c),   ob = (d-c)/(b-c),
             oc = (b-a)/(c-a),   od = (b-a)/(d-a);
     if(sgn(oa)*sgn(ob) < 0 && sgn(oc)*sgn(od) < 0)
-        return {(a.mult(ob) - b.mult(oa)).mult(ob-oa)};
+        return {(a.mult(ob) - b.mult(oa)).mult(1/(ob-oa))};
     set<P> S;
     if(onSegment(c, d, a)) S.insert(a);
     if(onSegment(c, d, b)) S.insert(b);
@@ -500,8 +500,8 @@ void rotating_calipers(vector<pll> CV){
 \begin{minted}{cpp}
 // credit : http://koosaga.com/97
 auto angle_sort = [&](const point &a, const point &b){
-    if((a > point(0, 0)) ^ (b > point(0, 0))) return a > b;
-    if(a / b != 0) return a / b > 0;
+    if((a < point(0, 0)) ^ (b < point(0, 0))) return b < a;
+    if(a / b != 0) return (a / b) > 0;
     return a.dist() < b.dist(); // norm
 }; // clockwise sort
 \end{minted}
@@ -827,13 +827,14 @@ struct Dinic{
     }
 
     bool bfs(int src, int sink){
-        for(int i = 0 ; i < R.size() ; i++) R[i] = -1;
+        fill(R.begin(), R.end(), -1);
         R[src] = 0;
         queue<int> Q; Q.push(src);
         while(Q.size()){
             int here = Q.front();   Q.pop();
             for(auto e : ADJ[here]){
-                if(e.cap > 0 && R[e.index] == -1) R[e.index] = R[here] + 1, Q.push(e.index);
+                if(e.cap > 0 && R[e.index] == -1)
+                    R[e.index] = R[here] + 1, Q.push(e.index);
             }
         }
         return R[sink] != -1;
@@ -858,7 +859,7 @@ struct Dinic{
     int solve(int src, int sink){
         int ret = 0;
         while(bfs(src, sink)){
-            for(int i = 0 ; i < N ; i++) W[i] = 0;
+            fill(W.begin(), W.end(), 0);
             int res;
             while((res = dfs(src, sink, INF))) ret += res;
         }
