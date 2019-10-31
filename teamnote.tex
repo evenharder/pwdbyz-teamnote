@@ -422,8 +422,8 @@ template<class P>
 pair<int, P> lineInter(P a, P b, P c, P d){
     if((b-a)/(d-c) == 0) // parallel, mind the eps
         return {-((b-a)/(c-a) == 0), a};
-    double p = (d-c)/(a-c), q = (d-c)/(b-c);
-    return {(a.mult(p) - b.mult(q)).mult(1/(q-p))};
+    double  oa = (d-c)/(a-c),   ob = (d-c)/(b-c);
+    return {(a.mult(ob) - b.mult(oa)).mult(1/(ob-oa))};
 } // 1,0,-1(inf) : inter
 \end{minted}
 \subsubsection{Segment Intersection}
