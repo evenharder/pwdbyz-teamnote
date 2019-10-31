@@ -531,9 +531,13 @@ int main(){
 \added
 
 \subsubsection{Polygon Area}
-
+\begin{minted}{cpp}
+double ans = 0; // ans : double area
+for(int i=0;i<points.size();i++)
+    ans += points[i] / points[(i+1 == points.size() ? 0 : i+1)];
+\end{minted}
 \subsubsection{Polygon Overlapping}
-
+\added
 \section{Strings}
 
 \subsection{Aho-Corasick Algorithm}
