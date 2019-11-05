@@ -730,36 +730,53 @@ int min_rotation(string s) {
 
 \subsection{Strongly Connected Component}
 \begin{minted}{cpp}
-vector<int> adj[MAX_V];
-int finished[MAX];
-int dfsn[MAX_V];
-int cnt = 1;
-vector<vector<int>> SCC;
-stack<int> s;
+const int MAXN = 2e5 + 10; // > 2*N
+int N, M;
+int dfsn[MAXN], low[MAXN], finished[MAXN], cnt;
+vector<int> ADJ[MAXN];
+vector<vector<int>> G;
+stack<int> S;
+int f(int x){ // 0 1 2 3 4 5... -> f(1) f(-1) f(2) f(-2) f(3) f(-3)...
+    return 2 * (abs(x) - 1) + (x < 0);
+}
 
-int dfs(int cur) {
-    dfsn[cur] = cnt++;
-    s.push(cur);
-    int res = dfsn[cur];
-    for (int n : adj[cur]) {
-        if (!dfsn[n]) res = min(res, dfs(n));
-        else if (!finished[n]) res = min(res, dfsn[n]);
+void add_edge(int x, int y){ // call by f(x), f(y)
+    ADJ[x ^ 1].push_back(y);
+    ADJ[y ^ 1].push_back(x);
+}
+
+// memset(finished, -1, sizeof(finished));
+int scc(int here){
+    static vector<int> tmp;
+    S.push(here);
+    dfsn[here] = low[here] = ++cnt;
+    int &ret = low[here];
+    for(int there : ADJ[here]){
+        if(dfsn[there] == 0) ret = min(ret, scc(there));
+        else if(finished[there] == -1) ret = min(ret, dfsn[there]);
     }
-    if (res == dfsn[cur]) {
-        vector<int> sub;
-        int t = -1;
-        do {
-            t = s.top(); s.pop();
-            finished[t] = 1;
-            sub.push_back(t);
-        } while (t != cur);
-        SCC.push_back(sub);
+
+    if(dfsn[here] == low[here]){
+        while(1){
+            int x = S.top();    S.pop();
+            finished[x] = G.size();
+            tmp.push_back(x);
+            if(x == here) break;
+        }
+        G.push_back(tmp);
+        tmp.clear();
     }
-    return res;
+    return ret;
 }
 \end{minted}
-\subsection{2-SAT}
-\added
+\subsubsection{2-SAT}
+\begin{itemize}
+    \item \texttt{scc}를 실행시켜 \texttt{f(i)} 와 \texttt{f(-i)}가 같은 component에 있다면, 모순.
+    \item \texttt{f(i)} 와 \texttt{f(-i)} 중 \texttt{finished} 배열의 수가 작은 것이 참이다.
+    \begin{itemize}
+    \item SCC numbering의 역순이 위상정렬이기에, $ F \to\ T$를 유지하기 위함
+    \end{itemize}
+\end{itemize}
 \subsection{Biconnected Component}
 \added
 \subsection{Euler Tour}
