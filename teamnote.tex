@@ -661,23 +661,6 @@ vector<int> manacher(const string& s) {
     return p;
 }
 \end{minted}
-\subsection{Manacher's Algorithm}
-\begin{minted}{cpp}
-// 0-based
-// s   = # h # e # l # l # o #
-// ret = 0 1 0 1 0 1 2 1 0 1 0
-
-vector<int> manacher(const string& s) {
-    int n = s.size(), r = -1, k = -1;
-    vector<int> p(n);
-    for (int i=0; i<n; i++) {
-        if (i<=r) p[i] = min(r-i, p[2*k-i]);
-        while (i-p[i]-1>=0 and i+p[i]+1<n and s[i-p[i]-1] == s[i+p[i]+1]) p[i]++;
-        if (r < i+p[i]) r = i+p[i], k = i;
-    }
-    return p;
-}
-\end{minted}
 
 \subsection{Z Algorithm}
 \begin{minted}{cpp}
@@ -1706,7 +1689,6 @@ static inline int _readInt() {
 \end{minted}
 
 \subsection {C++ Tips / Environments}
-\revised (with random, \verb|chrono|)
 \begin{minted}{cpp}
 #include <bits/stdc++.h> // magic header
 using namespace std;     // magic namespace
