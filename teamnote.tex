@@ -1567,7 +1567,37 @@ void get_clique(int R = 0, ll P = (1ll<<N)-1, ll X = 0){
 }
 \end{minted}
 \subsubsection{De Brujin Sequence}
-\added...?
+\begin{minted}{cpp}
+// https://github.com/koosaga/DeobureoMinkyuParty/blob/master/teamnote.tex
+// alphabet = [0, k - 1], substr length n, res starts with 0 (cyclic)
+int res[10000000], aux[10000000]; // >= k^n, k*n 
+int de_bruijn(int k, int n, int lim) { // returns size (k^n)
+    if(k == 1) {
+        res[0] = 0;
+        return 1;
+    }
+    for(int i = 0; i < k * n; i++) aux[i] = 0;
+    int sz = 0;
+    function<void(int, int)> db = [&](int t, int p) {
+        if(sz > lim) return;
+        if(t > n) {
+            if(n % p == 0)
+                for(int i = 1; i <= p; i++)
+                    res[sz++] = aux[i];
+        }
+        else {
+            aux[t] = aux[t - p];
+            db(t + 1, p);
+            for(int i = aux[t - p] + 1; i < k; i++) {
+                aux[t] = i;
+                db(t + 1, t);
+            }
+        }
+    };
+    db(1, 1);
+    return sz;
+}
+\end{minted}
 
 \subsection {Highly Composite Numbers, Large Prime}
 \begin{minted}{cpp}
