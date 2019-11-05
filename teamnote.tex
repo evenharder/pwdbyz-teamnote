@@ -1484,7 +1484,28 @@ pair<ll, ll> stern_brocot(ll M, ll N) {
 %\subsection{Treap}
 %\added...?
 \subsection{Rope}
-\added
+\begin{minted}{cpp}
+#include <bits/stdc++.h>
+#include <ext/rope>
+using namespace std;
+using namespace __gnu_cxx;
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+
+    crope rp; // rope<char>
+    string s("Lorem-ipsum");
+    int n = s.length();
+    rp.append(s.c_str()); // add element
+
+    int x = 3, y = 8; // split and merge below
+    rp = rp.substr(x, y-x) + rp.substr(0, x) + rp.substr(y, n);
+    cout << rp.at(0) << '\n'; // get element, 'e'
+    cout << rp << '\n'; // print, "em-ip|Lor|sum"
+}
+\end{minted}
 \subsection{Policy Based Data Structure}
 \begin{minted}{cpp}
 #include <bits/stdc++.h>
