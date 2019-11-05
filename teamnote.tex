@@ -138,8 +138,6 @@ template<class TH, class... TA> void _dbg(const char *sdbg, TH h, TA... a) {
     \item $\int_{a}^{b} f(x)\ dx = \frac{b-a}{6}\left[f(a) + 4f(\frac{a+b}{2}) + f(b)\right]$ (Simpson's Rule, for cubic poly)
     \item $\int u'v\ dx = uv - \int uv'\ dx$ (Integration by parts)
 \end{itemize}
-\subsubsection{Gaussian Elimination}
-\added...?
 \subsection{Number Theory}
 \subsubsection{Lattice Points under Line}
 \begin{minted}{cpp}
@@ -444,7 +442,7 @@ template<class P> vector<P> segInter(P a, P b, P c, P d){
 }
 \end{minted}
 \subsubsection{Circle-Line Intersection}
-
+\added
 \subsection{Convex Hull}
 \begin{minted}{cpp}
 vector<pll> get_CV(vector<pll> V){
@@ -528,7 +526,6 @@ int main(){
 } // Non-deterministic, deterministic O(n lg n) requires Voronoi diagram
 \end{minted}
 \subsection{Polygon Area}
-\added
 
 \subsubsection{Polygon Area}
 \begin{minted}{cpp}
@@ -536,8 +533,6 @@ double ans = 0; // ans : double area
 for(int i=0;i<points.size();i++)
     ans += points[i] / points[(i+1 == points.size() ? 0 : i+1)];
 \end{minted}
-\subsubsection{Polygon Overlapping}
-\added
 \section{Strings}
 
 \subsection{Aho-Corasick Algorithm}
@@ -831,8 +826,6 @@ void Eulerian(int curr){
     cout << curr << '\n';
 }
 \end{minted}
-\subsection{Offline Dynamic Connectivity}
-\added
 \subsection{Heavy-Light Decomposition}
 \begin{minted}{cpp}
 int N, M;
@@ -867,7 +860,8 @@ void dfs2(int here, int c){ // dfs reordering
 \added
 \subsection{Tree Compress}
 \added
-
+\subsection{Stoer–Wagner Algorithm}
+\added
 \section{Network Flow}
 
 \subsection{Theorems}
@@ -1385,8 +1379,7 @@ void cut(node *p){
 	pull(p);
 }
 \end{minted}
-\subsection{Li-Chao Tree}
-\added...?
+
 \subsection{Dynamic Convex Hull}
 \begin{minted}{cpp}
 // https://github.com/niklasb/contest-algos/blob/master/convex_hull/dynamic.cpp
