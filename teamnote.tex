@@ -834,7 +834,33 @@ void Eulerian(int curr){
 \subsection{Offline Dynamic Connectivity}
 \added
 \subsection{Heavy-Light Decomposition}
-\added % 각 서브트리에서 크기 순으로 정렬하기
+\begin{minted}{cpp}
+int N, M;
+vector<int> ADJ[MAXN];
+int S[MAXN];
+int hld_head[MAXN], color[MAXN], dfsn[MAXN], dcnt, hcnt;
+int P[MAXN];
+
+void dfs1(int here, int par){
+  S[here] = 1;  P[here] = par;
+  for(int there : ADJ[here]) if(there != par) dfs1(there, here), S[here] += S[there];
+}
+
+void dfs2(int here, int c){ // dfs reordering
+  if(hld_head[c] == 0) hld_head[c] = here;
+  dfsn[here] = ++dcnt;  color[here] = c;
+
+  sort(ADJ[here].begin(), ADJ[here].end(), [&](int x, int y){
+    return S[x] > S[y];
+  });
+
+  int cnt = 0;
+  for(int there : ADJ[here]) if(there != P[here]){
+    if(++cnt == 1) dfs2(there, c);
+    else dfs2(there, ++hcnt);
+  }
+}
+\end{minted}
 \subsection{Dominator Tree}
 \added
 \subsection{Negative Cycle Detection}
