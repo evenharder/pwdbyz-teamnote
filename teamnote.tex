@@ -206,9 +206,8 @@ ll bsgs(ll k, ll a, ll n) {
 \end{minted}
 \subsubsection{Extended Euclidean Algorithm}
 \begin{minted}{cpp}
-// ax + by = gcd(a,b) => x ? y ?
-typedef long long int ll
-pair<ll,ll> ext_gcd(ll a,ll b) {
+// ax + by = gcd(a,b). x, y?
+pll ext_gcd(ll a,ll b) {
     if(b) {
         auto tmp = ext_gcd(b, a%b);
         return {tmp.second, tmp.first - (a/b) * tmp.second};
@@ -216,31 +215,34 @@ pair<ll,ll> ext_gcd(ll a,ll b) {
     else return {1, 0};
 }
 
-// ax = 1 mod M, x?
-ll mod_inv(ll a, ll M) {
-    return (ext_gcd(a, M).first + M) % M;
+// ax = gcd(a, m) mod m. x?
+ll mod_inv(ll a, ll m) {
+    return (ext_gcd(a, m).first + m) % m;
 }
 \end{minted}
 \subsubsection{Chinese Remainder Theorem}
 \begin{minted}{cpp}
-typedef long long int ll;
-ll CRT(vector<ll> rem, vector<ll> mod, int k) {
-    ll m = 1;
-    for(auto i : mod) m *= i;
-    ll ret = 0;
-    for(int i = 0 ; i < k ; i++) {
-        ll tmp = (m / mod[i]) % mod[i];
-        ll si = mod_inv(tmp, mod[i]);
-        ret += (rem[i] * si % m) * (m / mod[i]) % m;
-        ret %= m;
-    }
-    return ret;
+ll pos_rem(ll a, ll m) { // m > 0. a % m?
+    ll res = abs(a) % m;
+    return a > 0 ? res : (res ? m - res : 0);
+}
+// ax = c mod m, bx = d mod n. x?
+ll solve(ll a, ll c, ll m, ll b, ll d, ll n) {
+    a = pos_rem(a, m); c = pos_rem(c, m);  // if a, c not in [0, m)
+    b = pos_rem(b, n); d = pos_rem(d, n);  // if b, d not in [0, n)
+    ll  g = _gcd(a, _gcd(c, m));    a /= g, c /= g, m /= g;
+        g = _gcd(b, _gcd(d, n));    b /= g, d /= g, n /= g;
+    if(c % _gcd(a, m) || d % _gcd(b, n)) return inf;
+    ll t1 = (mod_inv(a, m) * c) % m;
+    ll t2 = (mod_inv(b, n) * d) % n;
+    g = _gcd(m, n);
+    ll lc = m * n / g;
+    if(abs(t1 - t2) % g) return inf;
+    pl p = ext_gcd(m, n);
+    ll q = (t1 * p.second * n/g + t2 * p.first * m/g);
+    return pos_rem(q, lc);
 }
 \end{minted}
-$ x \equiv a \pmod m$, $ x \equiv b \pmod n $일 경우 해가 존재하려면 $ a \equiv b \mod \gcd(m, n) $이여야 함.
-
-$ g = \gcd(n, m) = um + vn$이라 할 때 $ x \equiv (avn + bum) / g \pmod \text{lcm}(n, m)$.
-\added
 \subsubsection{M\"obius Inversion Formula}
 $ \forall n \in \mathbb{N}\ g(n) = \sum_{d|n} f(d) \implies f(n) = \sum_{d|n} \mu(d) g(n/d) $
 
