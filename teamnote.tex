@@ -1650,6 +1650,35 @@ int main()
     cout << rp << '\n'; // print, "em-ip|Lor|sum"
 }
 \end{minted}
+\subsection{Bitset}
+\begin{minted}{cpp}
+#include <bitset>
+#include <iostream>
+using namespace std;
+
+int main() {
+    bitset<8> b1(13);               // 00001101
+    bitset<8> b2("10111");          // 00010111
+
+    cout << b1.count() << endl;     // 3
+    cout << b1.test(6) << endl;     // 0, since 2^6-th bit is 0
+    b1.set(6);                      // set to 1, 1-fill if no param
+    b2.reset(2);                    // set to 0, 0-fill if no param
+    // use 'flip' for flipping
+
+    cout << "b1:" << b1 << endl;            // b1:01001101
+    cout << "b2:" << b2 << endl;            // b2:00010011
+    // use any, none, all (c++11) for bit checking
+    // supported operators : &, |, ^, <<, >>, ~, ==, !=
+    // these operators must match size (given to template)
+
+    cout << "&: " << (b1 & b2) << endl;     // &: 00000001
+    cout << "^: " << (b1 ^ b2) << endl;     // &: 01011110
+    cout << "|: " << (b1 | b2) << endl;     // |: 01011111
+    cout << "~: " << (~b1) << endl;         // ~: 10110010
+    cout << "<<:" << (b1 << 3) << endl;     // <<:01101000
+}
+\end{minted}
 \subsection{Policy Based Data Structure}
 \begin{minted}{cpp}
 #include <bits/stdc++.h>
