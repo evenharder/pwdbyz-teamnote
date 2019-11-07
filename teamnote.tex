@@ -688,7 +688,9 @@ int main(){
     point cur = (point){0, 0, 0};
     for(int i = 1 ; i <= t; i++){
         int ind = 1;
-        for(int j = 1 ; j <= N ; j++) if((A[j] - cur) * (A[j] - cur) > (A[ind] - cur) * (A[ind] - cur)) ind = j;
+        for(int j = 1 ; j <= N ; j++)
+        if( (A[j] - cur)    * (A[j] - cur) >
+            (A[ind] - cur)  * (A[ind] - cur)) ind = j;
         cur = cur + (A[ind] - cur) * rate;
         rate *= 0.99;
     }
@@ -761,14 +763,13 @@ namespace aho_corasick {
 \end{minted}
 \subsection{Lexicographically Smallest String Rotation}
 \begin{minted}{cpp}
-// rotate(v.begin(), v.begin()+min_rotation(v), v.end());
 int min_rotation(string s) {
     int a=0, N=sz(s); s += s;
-    rep(b,0,N) rep(i,0,N) {
+    rep(b,N) rep(i,N) {
         if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
         if (s[a+i] > s[b+i]) { a = b; break; }
     }
-    return a;
+    return a; // rotate(v.begin(), v.begin()+min_rotation(v), v.end());
 }
 \end{minted}
 
@@ -781,9 +782,7 @@ vector<int> make_sa(const string& s) {
     int n = s.length();
     int lim = max(128, n+1);
     vector<int> sa(n), g(n+1), ng(n+1), cnt(lim), ind(lim+1);
-    for(int i=0;i<n;i++) {
-        sa[i] = i; g[i] = s[i];
-    }
+    rep(i, n) sa[i] = i, g[i] = s[i];
     g[n] = 0;
     for(int t=1;t<s.length();t<<=1)
     {
@@ -808,11 +807,10 @@ vector<int> make_sa(const string& s) {
 }
 
 vector<int> make_lcp(const string& s, const vector<int>& sa) {
-    int n = s.length();
+    int n = s.length(), len = 0;
     vector<int> lcp(n-1), rank(n);
     for(int i=0;i<n;i++)
         rank[sa[i]] = i;
-    int len = 0;
     for(int i=0;i<n;i++) {
         if(rank[i]) {
             int j = sa[rank[i]-1];
@@ -938,9 +936,7 @@ void dfs(int x, int p){
             dfs(w, x);
             low[x] = min(low[x], low[w]);
         }
-        else{
-            low[x] = min(low[x], dfn[w]);
-        }
+        else low[x] = min(low[x], dfn[w]);
     }
 }
 
@@ -954,9 +950,7 @@ void color(int x, int c){
             bcc[x].push_back(++cpiv);
             color(w, cpiv);
         }
-        else{
-            color(w, c);
-        }
+        else color(w, c);
     }
 }
 \end{minted}
@@ -988,23 +982,24 @@ int hld_head[MAXN], color[MAXN], dfsn[MAXN], dcnt, hcnt;
 int P[MAXN];
 
 void dfs1(int here, int par){
-  S[here] = 1;  P[here] = par;
-  for(int there : ADJ[here]) if(there != par) dfs1(there, here), S[here] += S[there];
+    S[here] = 1;  P[here] = par;
+    for(int there : ADJ[here])
+        if(there != par) dfs1(there, here), S[here] += S[there];
 }
 
 void dfs2(int here, int c){ // dfs reordering
-  if(hld_head[c] == 0) hld_head[c] = here;
-  dfsn[here] = ++dcnt;  color[here] = c;
+    if(hld_head[c] == 0) hld_head[c] = here;
+    dfsn[here] = ++dcnt;  color[here] = c;
 
-  sort(ADJ[here].begin(), ADJ[here].end(), [&](int x, int y){
-    return S[x] > S[y];
-  });
+    sort(ADJ[here].begin(), ADJ[here].end(), [&](int x, int y){
+        return S[x] > S[y];
+    });
 
-  int cnt = 0;
-  for(int there : ADJ[here]) if(there != P[here]){
-    if(++cnt == 1) dfs2(there, c);
-    else dfs2(there, ++hcnt);
-  }
+    int cnt = 0;
+    for(int there : ADJ[here]) if(there != P[here]){
+        if(++cnt == 1) dfs2(there, c);
+        else dfs2(there, ++hcnt);
+    }
 }
 \end{minted}
 \subsection{Dominator Tree}
@@ -1064,7 +1059,8 @@ namespace Dtree {
 \subsection{Global Min Cut}
 \begin{minted}{cpp}
 // Stoer-Wagner Algorithm, O(VE lg E)
-int minimum_cut_phase(int n, int &s, int &t, vector<vector<int>> &adj, vector<int> vis){
+int minimum_cut_phase(int n, int &s, int &t,
+    vector<vector<int>> &adj, vector<int> vis){
     vector<int> dist(n);
     int mincut = 1e9;
     while(true){
@@ -1192,7 +1188,8 @@ struct MCMF {
         int there, cap, cost, rev;
 
         edge() : there(0), cap(0), cost(0), rev(0) {}
-        edge(int there, int cap, int cost, int rev) : there(there), cap(cap), cost(cost), rev(rev) {}
+        edge(int there, int cap, int cost, int rev) : there(there), cap(cap), 
+            cost(cost), rev(rev) {}
     };
 
     int N;
@@ -1200,7 +1197,8 @@ struct MCMF {
     vector<int> R, INQ, C, I;
 
     MCMF() : N(0) {}
-    MCMF(int N) : N(N) { ADJ.resize(N + 1); R.resize(N + 1); INQ.resize(N + 1);     C.resize(N + 1); I.resize(N + 1); }
+    MCMF(int N) : N(N) { ADJ.resize(N + 1); R.resize(N + 1); INQ.resize(N + 1);
+        C.resize(N + 1); I.resize(N + 1); }
 
     void CE(int i, int j, int cap, int cost) {
         ADJ[i].push_back(edge(j, cap, cost, ADJ[j].size()));
@@ -1208,16 +1206,19 @@ struct MCMF {
     }
     bool SPFA(int src, int sink) {
         queue<int> Q;    Q.push(src);
-        fill(R.begin(), R.end(), -1);    R[src] = 0;
-        fill(C.begin(), C.end(), -1);    C[src] = 0;
+        fill(R.begin(), R.end(), -1);       R[src] = 0;
+        fill(C.begin(), C.end(), -1);       C[src] = 0;
         fill(INQ.begin(), INQ.end(), 0);    INQ[src] = 1;
         while (Q.size()) {
             int here = Q.front();    Q.pop();
             INQ[here] = 0;
             for (int i = 0; i < ADJ[here].size(); i++) {
                 auto e = ADJ[here][i];
-                if (e.cap > 0 && (C[e.there] == -1 || C[e.there] > C[here] + e.cost)) {
-                    C[e.there] = C[here] + e.cost;    R[e.there] = here;    I[e.there] = i;
+                if ((C[e.there] == -1 || C[e.there] > C[here] + e.cost)
+                    && e.cap > 0) {
+                    C[e.there] = C[here] + e.cost;
+                    R[e.there] = here;
+                    I[e.there] = i;
                     if (!INQ[e.there]) INQ[e.there] = 1, Q.push(e.there);
                 }
             }
@@ -1230,7 +1231,8 @@ struct MCMF {
         pii ret = { 0, 0 };
         while (SPFA(src, sink)) {
             int flow = INF, cost = 0;
-            for (int here = sink; here != src; here = R[here]) flow = min(flow, ADJ[R[here]][I[here]].cap);
+            for (int here = sink; here != src; here = R[here])
+                flow = min(flow, ADJ[R[here]][I[here]].cap);
             for (int here = sink; here != src; here = R[here]) {
                 auto &e = ADJ[R[here]][I[here]];
                 cost += e.cost * flow;
