@@ -612,15 +612,23 @@ vector<P> circLine(P A, P B, P O, double r){
     vector<P> v;
     P X = O-A, D = B-A;
     double rat = 1.0 * (X*D) / (D*D);
-    double det = (X*D)*(X*D) - (D*D) * (X*X - r*r);
+    double det = (X*D)*(X*D) - (D*D)*(X*X - r*r);
     if(det < 0) return {};
     else if(det < eps) return {P(A + D.mult(rat))};
     det = sqrt(det);
-    return {P(A + D.mult(rat + det/(D*D))), P(A + D.mult(rat - det/(D*D)))};
+    return {P(A + D.mult(rat + det/(D*D))), 
+            P(A + D.mult(rat - det/(D*D)))};
 }
 \end{minted}
 \subsubsection{Circle-Line Tangent}
-\added
+\begin{minted}{cpp}
+vector<P> circTangent(P A, P O, double r){
+    if((O-A).dist2() < r*r + eps) return {};
+    double th = asin(r/(O-A).dist());
+    return {A + (O-A).rotate(th). mult(cos(th)),
+            A + (O-A).rotate(-th).mult(cos(th))};
+}
+\end{minted}
 \subsection{Convex Hull}
 \begin{minted}{cpp}
 vector<pll> get_CV(vector<pll> V){
