@@ -22,6 +22,8 @@
 \usepackage{graphicx}
 \usepackage{fancyhdr}
 \usepackage{lastpage}
+\usepackage{makecell}
+\usepackage{float}
 \pagestyle{fancy}
 
 \newcommand{\teamname}{Powered by Zigui}
@@ -107,13 +109,64 @@ template<class TH, class... TA> void _dbg(const char *sdbg, TH h, TA... a) {
 \end{minted}
 
 \subsection*{Reminders}
-\added
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Pre-submit} & \textbf{Wrong answer:} \\ \hline
+        \makecell{
+            예제 작성해보기 (최소, 최대)\\
+            메모리, overflow 분석하기 \\
+            올바른 문제에 제출하기
+        } &
+        \makecell{
+            \textbf{코드 + debug output 출력} \\
+            다중 테케 문제에서 초기화 확인하기 \\
+            알고리즘이 제한조건을 전부 다루는지 확인하기 \\
+            \textbf{지문 다시 읽어보기} \\ 
+            corner case 찾아보기 \\
+            초기화 안 된 지역변수 찾아보기 \\
+            \textbf{\texttt{N, M, i, j} 등 변수 확인하기} \\
+            \textbf{풀이 증명하기} \\
+            STL 함수 다시 생각해보기 \\
+            이 목록 다시 읽어보기 \\
+            알고리즘 팀원에게 설명하기 \\
+            팀원이랑 코드 보기 \\
+            잠깐 일어나서 생각 재정비하고 오기 \\
+            \textbf{입출력 형식 확인하기 (whitespace 포함)}
+        } \\ \hline
+        \textbf{Runtime error:} & \textbf{Time limit exceeded: / Memory limit exceeded:} \\ \hline
+        \makecell{
+            코너 케이스 처리해보기 \\
+            초기화 안 된 변수 찾기 \\
+            out-of-range 확인하기 \\
+            assertion 넣어보기 \\
+            무한 재귀 확인하기 \\
+            null pointer 확인하기 \\
+            메모리 사용량 확인하기
+        } &
+        \makecell{
+            \textbf{무한 루프 확인하기} \\
+            \textbf{알고리즘 시간 복잡도 확인하기} \\
+            data copy 어느 정도 하는지 확인하기 (reference) \\
+            입출력 규모 생각하기 (\texttt{scanf} 고려해보기) \\
+            \texttt{vector, map} 최소화하기 \\
+            팀원에게 알고리즘 물어보기 \\
+            최대 메모리 사용량 계산하기 \\
+            다중 테케 문제에서 초기화하기 \\ 
+        } \\ \hline
+        
+    \end{tabular}
+\end{table}
+
 \begin{figure}[h]
     \centering
     \includegraphics[height=0.2\textheight]{./cheer_potato.png}
     \caption{풀다가 막힐 때는 이 그림을 봅시다. 아자아자 화이팅!}
 \end{figure}
 
+\newpage
 \section{Math}
 
 \subsection{Basic Mathematics}
