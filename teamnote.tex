@@ -764,7 +764,7 @@ namespace aho_corasick {
 \subsection{Lexicographically Smallest String Rotation}
 \begin{minted}{cpp}
 int min_rotation(string s) {
-    int a=0, N=sz(s); s += s;
+    int a=0, N=s.size(); s += s;
     rep(b,N) rep(i,N) {
         if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
         if (s[a+i] > s[b+i]) { a = b; break; }
