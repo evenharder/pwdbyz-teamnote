@@ -759,6 +759,18 @@ namespace aho_corasick {
     }
 }
 \end{minted}
+\subsection{Lexicographically Smallest String Rotation}
+\begin{minted}{cpp}
+// rotate(v.begin(), v.begin()+min_rotation(v), v.end());
+int min_rotation(string s) {
+    int a=0, N=sz(s); s += s;
+    rep(b,0,N) rep(i,0,N) {
+        if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
+        if (s[a+i] > s[b+i]) { a = b; break; }
+    }
+    return a;
+}
+\end{minted}
 
 \subsection{Suffix Array}
 \begin{minted}{cpp}
@@ -778,19 +790,17 @@ vector<int> make_sa(const string& s) {
         auto cmp = [&] (int a, int b) {
             return g[a] != g[b] ? g[a] < g[b] : g[a+t] < g[b+t];
         };
-        for(int i=0;i<n;i++)    cnt[g[min(i+t, n)]]++;
-        for(int i=1;i<lim;i++)  cnt[i] += cnt[i-1];
-        for(int i=n-1;i>=0;i--) ind[--cnt[g[min(i+t, n)]]] = i;
-        for(int i=0;i<lim;i++)  cnt[i] = 0;
-        for(int i=0;i<n;i++)    cnt[g[i]]++; // same as cnt[g[ind[i]]]++
-        for(int i=1;i<lim;i++)  cnt[i] += cnt[i-1];
-        for(int i=n-1;i>=0;i--) sa[--cnt[g[ind[i]]]] = ind[i];
+        rep (i, n)      cnt[g[min(i+t, n)]]++;
+        repp(i, 1, lim) cnt[i] += cnt[i-1];
+        repr(i, n, 0)   ind[--cnt[g[min(i+t, n)]]] = i;
+        rep (i, lim)    cnt[i] = 0;
+        rep (i, n)      cnt[g[i]]++; // same as cnt[g[ind[i]]]++
+        repp(i, 1, lim) cnt[i] += cnt[i-1];
+        repr(i, n, 0)   sa[--cnt[g[ind[i]]]] = ind[i];
         ng[sa[0]] = 1;
-        for(int i=1;i<n;i++) {
-            ng[sa[i]] = ng[sa[i-1]] + cmp(sa[i-1], sa[i]);
-        }
+        repp(i, 1, n) ng[sa[i]] = ng[sa[i-1]] + cmp(sa[i-1], sa[i]);
         g = ng;
-        
+
         fill(cnt.begin(), cnt.end(), 0);
         fill(ind.begin(), ind.end(), 0);
     }
@@ -861,19 +871,6 @@ vector<int> z_algo(const string &s) {
         }
     }
     return Z;
-}
-\end{minted}
-
-\subsection{Lexicographically Smallest String Rotation}
-\begin{minted}{cpp}
-// rotate(v.begin(), v.begin()+min_rotation(v), v.end());
-int min_rotation(string s) {
-    int a=0, N=sz(s); s += s;
-    rep(b,0,N) rep(i,0,N) {
-        if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
-        if (s[a+i] > s[b+i]) { a = b; break; }
-    }
-    return a;
 }
 \end{minted}
 
