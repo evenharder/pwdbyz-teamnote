@@ -657,6 +657,15 @@ vector<pll> get_CV(vector<pll> V){
     return ret;
 }
 \end{minted}
+\subsection{Sorting Points by Angle}
+\begin{minted}{cpp}
+// credit : http://koosaga.com/97
+auto angle_sort = [&] (P &a, P &b){
+    if((a < point(0, 0)) ^ (b < point(0, 0))) return b < a;
+    if(a / b != 0) return a / b > 0;
+    return a.dist2() < b.dist2(); // norm
+}; // clockwise sort
+\end{minted}
 \subsection{Rotating Calipers}
 \begin{minted}{cpp}
 void rotating_calipers(vector<pll> CV){
@@ -679,15 +688,6 @@ void rotating_calipers(vector<pll> CV){
 
     printf("%lld %lld %lld %lld\n", CV[ind1].first, CV[ind1].second, CV[ind2].first, CV[ind2].second);
 }
-\end{minted}
-\subsection{Sorting Points by Angle}
-\begin{minted}{cpp}
-// credit : http://koosaga.com/97
-auto angle_sort = [&] (P &a, P &b){
-    if((a < point(0, 0)) ^ (b < point(0, 0))) return b < a;
-    if(a / b != 0) return a / b > 0;
-    return a.dist2() < b.dist2(); // norm
-}; // clockwise sort
 \end{minted}
 \subsection{Smallest Enclosing Circle}
 \begin{minted}{cpp}
@@ -1123,6 +1123,7 @@ int solve(int n, vector<vector<int>> adj){
     return ans;
 }
 \end{minted}
+\clearpage
 \section{Network Flow}
 
 \subsection{Theorems}
@@ -1294,20 +1295,12 @@ namespace Hung {
                 int i0 = p[j0], j1;
                 for (int j=1; j<=m; ++j) if (!used[j]) {
                     T cur = a[i0][j]-u[i0]-v[j];
-                    if (cur < minv[j]) {
-                        minv[j] = cur, way[j] = j0;
-                    }
-                    if (minv[j] < delta) {
-                        delta = minv[j], j1 = j;
-                    }
+                    if (cur < minv[j]) minv[j] = cur, way[j] = j0;
+                    if (minv[j] < delta) delta = minv[j], j1 = j;
                 }
                 for (int j=0; j<=m; ++j) {
-                    if (used[j]) {
-                        u[p[j]] += delta, v[j] -= delta;
-                    }
-                    else {
-                        minv[j] -= delta;
-                    }
+                    if (used[j]) u[p[j]] += delta, v[j] -= delta;
+                    else minv[j] -= delta;
                 }
                 j0 = j1;
             } while (p[j0] != 0);
@@ -1451,20 +1444,17 @@ void dnc(int t, int l, int r, int s, int e)
 int dfs(int u, int p) {
     sub[u] = 1;
     for (auto v : tree[u])
-        if (v != p) sub[u] += dfs(v, u);
+        if (v != p and !chk[v]) sub[u] += dfs(v, u);
     return sub[u] + 1;
-}
+} // calc subtree size, chk means that node was a centroid
 
 // each tree has at most two centroids
 int centroid(int u, int p, int r) { // r : root
     for (auto v : tree[u])
-        if (v != p and sub[v] > sub[r]/2) return centroid(v, u);
+        if (v != p and !chk[v] and sub[v] > sub[r]/2) return centroid(v, u);
     return u;
 }
 \end{minted}
-
-%\subsection{IOI 2016 Alien Trick}
-%\added...? (move to misc?)
 
 \section{Data Structure}
 
@@ -2036,13 +2026,12 @@ unordered_map<point, int, hasher> hsh;
 #include <iomanip>      // std::setprecision
 
 int main () {
-    double f =3.14159;
+    double f = 3.14159;
     std::cout << std::setprecision(5) << f << '\n'; // 3.1416
     std::cout << std::setprecision(9) << f << '\n'; // 3.14159
     std::cout << std::fixed;
     std::cout << std::setprecision(5) << f << '\n'; // 3.14159
     std::cout << std::setprecision(9) << f << '\n'; // 3.141590000
-    return 0;
 }
 \end{minted}
 
