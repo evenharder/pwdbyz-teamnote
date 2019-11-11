@@ -668,10 +668,10 @@ vector<pll> get_CV(vector<pll> V){
 \begin{minted}{cpp}
 // credit : http://koosaga.com/97
 auto angle_sort = [&] (P &a, P &b){
-    if((a < point(0, 0)) ^ (b < point(0, 0))) return b < a;
+    if((a < P(0, 0)) ^ (b < P(0, 0))) return b < a;
     if(a / b != 0) return a / b > 0;
     return a.dist2() < b.dist2(); // norm
-}; // clockwise sort
+}; // counter-clockwise sort
 \end{minted}
 \subsection{Rotating Calipers}
 \begin{minted}{cpp}
