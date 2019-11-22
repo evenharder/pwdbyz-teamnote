@@ -748,44 +748,44 @@ for(int i=0;i<points.size();i++)
 // required macro : rep, repi, setz
 namespace aho_corasick {
     const int MAXN = 200002, MAXC = 26;
-    int trans[MAXN+1][MAXC];
+    int go[MAXN+1][MAXC];
     int fail[MAXN+1];
     bool term[MAXN+1];
 
     void build(const vector<string> &v) {
-        setz(trans), setz(fail), setz(term);
+        setz(go), setz(fail), setz(term);
         int cnode = 1;
 
         repi(s, v) {
-            int p = 0;
+            int p = 0;          // root is 0
             repi(j, s) {
                 char c = j-'a'; // check starting alphabet
-                if (!trans[p][c]) trans[p][c] = cnode++;
-                p = trans[p][c];
+                if (!go[p][c]) go[p][c] = cnode++;
+                p = go[p][c];
             }
             term[p] = true;
         }
 
-        queue<int> q; rep(i, MAXC) if (trans[0][i]) q.push(trans[0][i]);
+        queue<int> q; rep(i, MAXC) if (go[0][i]) q.push(go[0][i]);
         while(!q.empty()) {
             int t = q.front(); q.pop();
             rep(i, MAXC) {
-                if (trans[t][i]) {
+                if (go[t][i]) {
                     int p = fail[t];
-                    while(p and not trans[p][i]) p = fail[p];
-                    p = trans[p][i];
-                    fail[trans[t][i]] = p;
-                    if (term[p]) term[trans[t][i]] = true;
-                    q.push(trans[t][i]);
+                    while(p and not go[p][i]) p = fail[p];
+                    p = go[p][i];
+                    fail[go[t][i]] = p;
+                    if (term[p]) term[go[t][i]] = true;
+                    q.push(go[t][i]);
                 }
             }
         }
     }
 
-    ll step(int p, int c) { 
-        if(trans[p][c]) return trans[p][c];
-        if(p) return trans[p][c] = step(fail[p], c); // if not root
-        return trans[p][c] = p;
+    ll step(int p, int c) {
+        if(go[p][c]) return go[p][c];
+        if(p) return go[p][c] = step(fail[p], c); // if not root
+        return go[p][c] = p;
     }
 
     bool query(string &t) {
