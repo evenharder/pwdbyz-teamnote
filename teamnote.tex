@@ -793,6 +793,10 @@ namespace aho_corasick {
         repi(i, t) {
             char c = i-'a'; // check starting alphabet
             p = step(p, c);
+            /* if you need the original trie, use this or make length array
+            while(p and not go[p][c]) p = fail[p];
+            p = go[p][c];
+            */
             if (term[p]) return true;
         }
         return false;
