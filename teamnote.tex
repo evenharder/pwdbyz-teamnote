@@ -737,12 +737,15 @@ double ans = 0; // ans : double area
 for(int i=0;i<points.size();i++)
     ans += points[i] / points[(i+1 == points.size() ? 0 : i+1)];
 \end{minted}
+
+\newpage
 \section{Strings}
 
 \subsection{Aho-Corasick Algorithm}
 \begin{minted}{cpp}
+// required macro : rep, repi, setz
 namespace aho_corasick {
-    const int MAXN = 100000, MAXC = 26;
+    const int MAXN = 200002, MAXC = 26;
     int trans[MAXN+1][MAXC];
     int fail[MAXN+1];
     bool term[MAXN+1];
@@ -754,7 +757,7 @@ namespace aho_corasick {
         repi(s, v) {
             int p = 0;
             repi(j, s) {
-                char c = j-'a';
+                char c = j-'a'; // check starting alphabet
                 if (!trans[p][c]) trans[p][c] = cnode++;
                 p = trans[p][c];
             }
@@ -777,14 +780,18 @@ namespace aho_corasick {
         }
     }
 
+    ll step(int p, int c) { 
+        if(trans[p][c]) return trans[p][c];
+        if(p) return trans[p][c] = step(fail[p], c); // if not root
+        return trans[p][c] = p;
+    }
+
     bool query(string &t) {
         int p = 0;
         repi(i, t) {
-            char c = i-'a';
-            while(p and not trans[p][c]) p = fail[p];
-            p = trans[p][c];
+            char c = i-'a'; // check starting alphabet
+            p = step(p, c);
             if (term[p]) return true;
-
         }
         return false;
     }
