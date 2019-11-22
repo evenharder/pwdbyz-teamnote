@@ -702,21 +702,21 @@ void rotating_calipers(vector<pll> CV){
 int main(){
     scanf("%d", &N);
     for(int i = 1 ; i <= N ; i++) scanf("%lf%lf%lf", &A[i].x, &A[i].y, &A[i].z);
-    
+
     int t = 70000;
     double rate = 1.0;
     point cur = (point){0, 0, 0};
     for(int i = 1 ; i <= t; i++){
         int ind = 1;
         for(int j = 1 ; j <= N ; j++)
-        if( (A[j] - cur)    * (A[j] - cur) >
+        if( (A[j] - cur) * (A[j] - cur) >
             (A[ind] - cur)  * (A[ind] - cur)) ind = j;
-        cur = cur + (A[ind] - cur) * rate;
+        cur = cur + (A[ind] - cur).mult(rate);
         rate *= 0.99;
     }
     double r = 0;
     for(int i = 1 ; i <= N ; i++) r = max(r, (A[i] - cur) * (A[i] - cur));
-    cout << sqrt(r);
+    cout << setprecision(10) << fixed << sqrt(r);
     return 0;
 } // Non-deterministic, deterministic O(n lg n) requires Voronoi diagram
 \end{minted}
