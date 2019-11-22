@@ -782,7 +782,7 @@ namespace aho_corasick {
         }
     }
 
-    ll step(int p, int c) {
+    int step(int p, int c) {
         if(go[p][c]) return go[p][c];
         if(p) return go[p][c] = step(fail[p], c); // if not root
         return go[p][c] = p;
