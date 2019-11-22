@@ -811,9 +811,10 @@ int min_rotation(string s) {
 
 \subsection{Suffix Array}
 \begin{minted}{cpp}
+// required macro : rep, repr, repp
 // str  : abracadabra
-// SA   : 10 7 0 3 5 8 1 4 6 9 2
-// LCP  : 1 4 1 1 0 3 0 0 0 2
+// SA   : 10 7 0 3 5 8 1 4 6 9 2    (0-based)
+// LCP  : 1 4 1 1 0 3 0 0 0 2       (lcp[i] : lcp of sa[i], sa[i+1])
 vector<int> make_sa(const string& s) {
     int n = s.length();
     int lim = max(128, n+1);
@@ -841,13 +842,11 @@ vector<int> make_sa(const string& s) {
     }
     return sa;
 }
-
 vector<int> make_lcp(const string& s, const vector<int>& sa) {
     int n = s.length(), len = 0;
     vector<int> lcp(n-1), rank(n);
-    for(int i=0;i<n;i++)
-        rank[sa[i]] = i;
-    for(int i=0;i<n;i++) {
+    rep(i, n) rank[sa[i]] = i;
+    rep(i, n) {
         if(rank[i]) {
             int j = sa[rank[i]-1];
             int lc = n - max(i,j);
