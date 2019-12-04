@@ -200,6 +200,24 @@ template<class TH, class... TA> void _dbg(const char *sdbg, TH h, TA... a) {
     \item $\int_{a}^{b} f(x)\ dx = \frac{b-a}{6}\left[f(a) + 4f(\frac{a+b}{2}) + f(b)\right]$ (Simpson's Rule, for cubic poly)
     \item $\int u'v\ dx = uv - \int uv'\ dx$ (Integration by parts)
 \end{itemize}
+\subsubsection{Combinatorics}
+
+$n \brack k $ (\textbf{Stirling numbers of the first kind} / $n$ elem, $k$ cycle)
+\begin{itemize}
+    \item ${n+1 \brack k} = n {n \brack k} + {n \brack k-1}$, $ {n \brack 0} = {0 \brack n} = {0 \brack 0} = 1 $
+\end{itemize}
+
+$n \brace k $ (\textbf{Stirling numbers of the second kind} / $n$ elem, $k$ unlabeled subset)
+\begin{itemize}
+    \item ${n+1 \brace k} = k {n \brace k} + {n \brace k-1}$, $ {n \brace 0} = {0 \brace n} = {0 \brace 0} = 1 $
+\end{itemize}
+
+$B_n$ (\textbf{Bell number}, $n$ elem, partition)
+\begin{itemize}
+\item $B_{n+1} = \sum_{k=0}^{n} \binom{n}{k} B_k$, $B_{n+1} = \sum_{k=0}^{n} {n \brace k}$
+\item $B_{p^m+n} \equiv m B_n + B_{n+1}$
+\end{itemize}
+
 \subsection{Number Theory}
 \subsubsection{Lattice Points under Line}
 \begin{minted}{cpp}
