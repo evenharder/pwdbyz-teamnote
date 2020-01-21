@@ -803,17 +803,17 @@ namespace aho_corasick {
     int step(int p, int c) {
         if(go[p][c]) return go[p][c];
         if(p) return go[p][c] = step(fail[p], c); // if not root
-        return go[p][c] = p;
+        return go[p][c] = -1; // -1 is same as 0, but is visited
     }
 
     bool query(string &t) {
         int p = 0;
         repi(i, t) {
             char c = i-'a'; // check starting alphabet
-            p = step(p, c);
+            p = max(0, step(p, c));
             /* if you need the original trie, use this or make length array
             while(p and not go[p][c]) p = fail[p];
-            p = go[p][c];
+            p = max(0, go[p][c]);
             */
             if (term[p]) return true;
         }
