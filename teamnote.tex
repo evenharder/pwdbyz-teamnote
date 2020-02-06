@@ -229,6 +229,7 @@ ll calc(ll a,ll b,ll c,ll n){
 } // 0 <= x < n, 0 < y <= (a/c)x+(b/c)
 \end{minted}
 \subsubsection{Shanks' Baby-step Giant-step}
+\revised
 \begin{minted}{cpp}
 ll mexp(ll x, ll y, ll p) {
     if(!y) return 1;
@@ -1687,8 +1688,7 @@ struct Line {
         if (rhs.b != is_query) return m < rhs.m;
         const Line* s = succ();
         if (!s) return 0;
-        ll x = rhs.m;
-        return b - s->b < (s->m - m) * x;
+        return b - s->b < (s->m - m) * rhs.m;
     }
 };
 struct HullDynamic : public multiset<Line> { // will maintain upper hull for maximum
@@ -1702,8 +1702,8 @@ struct HullDynamic : public multiset<Line> { // will maintain upper hull for max
         if (z == end()) return y->m == x->m && y->b <= x->b;
         return (x->b - y->b)*(z->m - y->m) >= (y->b - z->b)*(y->m - x->m);
     }
-    void insert_line(ll m, ll b) {
-        auto y = insert({ m, b });
+    void insert_line(Line l) {
+        auto y = insert(l);
         y->succ = [=] { return next(y) == end() ? 0 : &*next(y); };
         if (bad(y)) { erase(y); return; }
         while (next(y) != end() && bad(next(y))) erase(next(y));
