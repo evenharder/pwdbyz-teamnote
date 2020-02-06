@@ -229,7 +229,6 @@ ll calc(ll a,ll b,ll c,ll n){
 } // 0 <= x < n, 0 < y <= (a/c)x+(b/c)
 \end{minted}
 \subsubsection{Shanks' Baby-step Giant-step}
-\revised
 \begin{minted}{cpp}
 ll mexp(ll x, ll y, ll p) {
     if(!y) return 1;
@@ -259,25 +258,24 @@ ll get_primitive(ll n) {
     }
     return -1;
 }
-// find x s.t. x^k mod n = a -> (g^k)^y mod n = a, where x = g^y
-ll bsgs(ll k, ll a, ll n) {
-    ll g = get_primitive(n), phi = n-1; // assume n is prime
-    if(g == -1) return -1;
-    ll m = ceil(sqrt(n) + 1e-9);
-    vector<pl> prec(m);
-    for(ll j=0;j<m;j++) {
-        prec[j] = {mexp(g, j * k % phi, n), j};
+// find k s.t. g^k = b mod n
+ll bsgs(ll g, ll b, ll n) {
+    ll sq = ceil(sqrt(n) + 1e-9);
+    vector<pl> prec(sq);
+    for(ll i=0;i<sq;i++) {
+        prec[i] = {mexp(g, i, n), i};
     }
     sort(prec.begin(), prec.end());
-    ll cur = a, ncur = mexp(g, (phi - m) * k % phi, n);
-    for(ll i=0;i<m;i++) {
+    ll base = mexp(g, n-1-sq, n); // g^(-m), assume n : prime
+    ll cur = b;
+    for(int i=0;i<sq;i++) {
         auto it = lower_bound(prec.begin(), prec.end(), pl(cur, 0));
         if(it->first == cur) {
-            return ans = mexp(g, (i*m + it->second) % phi, n);
+            return (i*sq + it->second) % (n-1);
         }
-        cur = cur * ncur % n;
+        cur = cur * base % n;
     }
-    return 0;
+    return -1;
 }
 \end{minted}
 \subsubsection{Extended Euclidean Algorithm}
