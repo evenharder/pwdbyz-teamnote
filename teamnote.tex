@@ -1488,7 +1488,7 @@ int dfs(int u, int p) {
 // each tree has at most two centroids
 int centroid(int u, int p, int r) { // r : root
     for (auto v : tree[u])
-        if (v != p and !chk[v] and sub[v] > sub[r]/2) return centroid(v, u);
+        if (v != p and !chk[v] and sub[v] > sub[r]/2) return centroid(v, u, r);
     return u;
 }
 \end{minted}
