@@ -820,17 +820,6 @@ namespace aho_corasick {
     }
 }
 \end{minted}
-\subsection{Lexicographically Smallest String Rotation}
-\begin{minted}{cpp}
-int min_rotation(string s) {
-    int a=0, N=s.size(); s += s;
-    rep(b,N) rep(i,N) {
-        if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
-        if (s[a+i] > s[b+i]) { a = b; break; }
-    }
-    return a; // rotate(v.begin(), v.begin()+min_rotation(v), v.end());
-}
-\end{minted}
 
 \subsection{Suffix Array}
 \begin{minted}{cpp}
@@ -879,6 +868,17 @@ vector<int> make_lcp(const string& s, const vector<int>& sa) {
         if(len) len--;
     }
     return lcp;
+}
+\end{minted}
+\subsection{Lexicographically Smallest String Rotation}
+\begin{minted}{cpp}
+int min_rotation(string s) {
+    int a=0, N=s.size(); s += s;
+    rep(b,N) rep(i,N) {
+        if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
+        if (s[a+i] > s[b+i]) { a = b; break; }
+    }
+    return a; // rotate(v.begin(), v.begin()+min_rotation(v), v.end());
 }
 \end{minted}
 \subsection{Manacher's Algorithm}
@@ -931,7 +931,37 @@ vector<int> z_algo(const string &s) {
 \end{minted}
 
 \section{Graph Theory}
+\subsection{Biconnected Component}
+\begin{minted}{cpp}
+// https://gist.github.com/koosaga/6f6fd50dd7067901f1b1
+void dfs(int x, int p){
+    dfn[x] = low[x] = ++piv;
+    par[x] = p;
+    for(int i=0; i<graph[x].size(); i++){
+        int w = graph[x][i];
+        if(w == p) continue;
+        if(!dfn[w]){
+            dfs(w, x);
+            low[x] = min(low[x], low[w]);
+        }
+        else low[x] = min(low[x], dfn[w]);
+    }
+}
 
+void color(int x, int c){
+    if(c > 0) bcc[x].push_back(c); // c == 0 : first component
+    vis[x] = 1;
+    for(int i=0; i<graph[x].size(); i++){
+        int w = graph[x][i];
+        if(vis[w]) continue;
+        if(dfn[x] <= low[w]){
+            bcc[x].push_back(++cpiv);
+            color(w, cpiv);
+        }
+        else color(w, c);
+    }
+}
+\end{minted}
 \subsection{Strongly Connected Component}
 \begin{minted}{cpp}
 const int MAXN = 2e5 + 10; // > 2*N
@@ -974,44 +1004,8 @@ int scc(int here){
 }
 \end{minted}
 \subsubsection{2-SAT}
-\begin{itemize}
-    \item \texttt{scc}를 실행시켜 \texttt{f(i)} 와 \texttt{f(-i)}가 같은 component에 있다면, 모순.
-    \item \texttt{f(i)} 와 \texttt{f(-i)} 중 \texttt{finished} 배열의 수가 작은 것이 참이다.
-    \begin{itemize}
-    \item SCC numbering의 역순이 위상정렬이기에, $ F \to\ T$를 유지하기 위함
-    \end{itemize}
-\end{itemize}
-\subsection{Biconnected Component}
-\begin{minted}{cpp}
-// https://gist.github.com/koosaga/6f6fd50dd7067901f1b1
-void dfs(int x, int p){
-    dfn[x] = low[x] = ++piv;
-    par[x] = p;
-    for(int i=0; i<graph[x].size(); i++){
-        int w = graph[x][i];
-        if(w == p) continue;
-        if(!dfn[w]){
-            dfs(w, x);
-            low[x] = min(low[x], low[w]);
-        }
-        else low[x] = min(low[x], dfn[w]);
-    }
-}
+\texttt{scc}를 실행시켜 \texttt{f(i)} 와 \texttt{f(-i)}가 같은 component에 있다면, 모순. \texttt{f(i)} 와 \texttt{f(-i)} 중 \texttt{finished} 배열의 수가 작은 것이 참이다. (SCC numbering의 역순이 위상정렬이기에, $ F \to\ T$를 유지하기 위함)
 
-void color(int x, int c){
-    if(c > 0) bcc[x].push_back(c); // c == 0 : first component
-    vis[x] = 1;
-    for(int i=0; i<graph[x].size(); i++){
-        int w = graph[x][i];
-        if(vis[w]) continue;
-        if(dfn[x] <= low[w]){
-            bcc[x].push_back(++cpiv);
-            color(w, cpiv);
-        }
-        else color(w, c);
-    }
-}
-\end{minted}
 \subsection{Euler Tour}
 \begin{minted}{cpp}
 struct Edge{
@@ -1059,8 +1053,7 @@ void dfs2(int x) {
     }
     out[x] = cnt;
 }
-// probably need lca
-int get_ans(int x, int p) {
+int get_ans(int x, int p) { // lca required
     int ret = 0;
     while(head[x] != head[p]) {
         // range : in[head[x]]], in[x]
