@@ -1034,31 +1034,41 @@ void Eulerian(int curr){
 \subsection{Heavy-Light Decomposition}
 \revised
 \begin{minted}{cpp}
-int N, M;
-vector<int> ADJ[MAXN];
-int S[MAXN];
-int hld_head[MAXN], color[MAXN], dfsn[MAXN], dcnt, hcnt;
-int P[MAXN];
-
-void dfs1(int here, int par){
-    S[here] = 1;  P[here] = par;
-    for(int there : ADJ[here])
-        if(there != par) dfs1(there, here), S[here] += S[there];
+int par[18][100003], lv[100003] = {-1, };
+vector<int> v[100003], g[100003]; // v : original, g : only children
+int in[100003], out[100003], siz[100003], head[100003];
+void dfs0(int x, int p) {
+    par[0][x] = p;
+    lv[x] = lv[p] + 1;
+    for(int y : v[x])
+        if(y != p) dfs0(y, x), g[x].push_back(y);
 }
-
-void dfs2(int here, int c){ // dfs reordering
-    if(hld_head[c] == 0) hld_head[c] = here;
-    dfsn[here] = ++dcnt;  color[here] = c;
-
-    sort(ADJ[here].begin(), ADJ[here].end(), [&](int x, int y){
-        return S[x] > S[y];
-    });
-
-    int cnt = 0;
-    for(int there : ADJ[here]) if(there != P[here]){
-        if(++cnt == 1) dfs2(there, c);
-        else dfs2(there, ++hcnt);
+void dfs1(int x) {
+    siz[x] = 1;
+    for(auto& y : g[x]) {
+        dfs1(y);
+        siz[x] += siz[y];
+        if(siz[y] > siz[g[x][0]]) swap(y, g[x][0]);
     }
+}
+void dfs2(int x) {
+    static int cnt = 0;
+    in[x] = ++cnt;
+    for(auto y : g[x]) {
+        head[y] = (y == g[x][0] ? head[x] : y);
+        dfs2(y);
+    }
+    out[x] = cnt;
+}
+// probably need lca
+int get_ans(int x, int p) {
+    int ret = 0;
+    while(head[x] != head[p]) {
+        // range : in[head[x]]], in[x]
+        x = par[0][head[x]];
+    }
+    // range : in[p], in[x];
+    return ret;
 }
 \end{minted}
 \subsection{Dominator Tree}
