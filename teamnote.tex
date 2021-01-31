@@ -971,7 +971,7 @@ int dfsn[MAXN], low[MAXN], finished[MAXN], cnt;
 vector<int> ADJ[MAXN];
 vector<vector<int>> G;
 stack<int> S;
-int f(int x){ // 0 1 2 3 4 5... -> f(1) f(-1) f(2) f(-2) f(3) f(-3)...
+int f(int x){ // f(1) f(-1) f(2) f(-2) f(3) f(-3) ... -> 0 1 2 3 4 5 ...
     return 2 * (abs(x) - 1) + (x < 0);
 }
 
