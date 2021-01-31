@@ -323,9 +323,10 @@ FFT : $
 (a_0, a_1, \cdots, a_{n-1}) \mapsto (\sum_{j=0}^{n-1}a_0 (\omega^0)^j, \sum_{j=0}^{n-1}a_1 (\omega^1)^j, \cdots, \sum_{j=0}^{n-1}a_{n-1} (\omega^{n-1})^j)
 $
 \begin{minted}{cpp}
+using base = complex<double>;
 void fft(vector<base>& a, bool inv) {
     int n = a.size(), j = 0;
-    vector<ll> roots(n/2);
+    vector<base> roots(n/2);
     for(int i=1;i<n;i++) {
         int bit = (n >> 1);
         while(j >= bit) {
@@ -340,18 +341,19 @@ void fft(vector<base>& a, bool inv) {
     for(int i=0;i<n/2;i++)
         roots[i] = base(cos(ang * i), sin(ang * i));
     /* In NTT, let prr = primitive root. Then,
-    int ang = mexp(prr, (mod - 1) / n);
+    int prr = 3, ang = mexp(prr, (mod - 1) / n);
     if(inv) ang = mexp(ang, mod - 2);
     for(int i=0; i<n/2; i++){
         roots[i] = (i ? (1ll * roots[i-1] * ang % mod) : 1);
     }
     also, make sure to apply modulus under here
+    and pre-compute mexp(n, mod-2)
     */
     for(int i=2;i<=n;i<<=1) {
         int step = n / i;
         for(int j=0;j<n;j+=i) {
             for(int k=0;k<i/2;k++) {
-                ll u = a[j+k], v = a[j+k+i/2] * roots[step * k];
+                base u = a[j+k], v = a[j+k+i/2] * roots[step * k];
                 a[j+k] = u+v;
                 a[j+k+i/2] = u-v;
             }
@@ -361,8 +363,7 @@ void fft(vector<base>& a, bool inv) {
 }
 
 void conv(vector<base>& x, vector<base>& y) {
-    int n = 2; while(n < max(x.size(), y.size())) n <<= 1;
-    n <<= 1;
+    int n = 2; while(n < x.size()+y.size()) n <<= 1;
     x.resize(n); y.resize(n);
     fft(x, false); fft(y, false);
     for(int i=0;i<n;i++) x[i] *= y[i];
