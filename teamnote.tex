@@ -1028,41 +1028,39 @@ void Eulerian(int curr){
 \end{minted}
 \subsection{Heavy-Light Decomposition}
 \begin{minted}{cpp}
-int par[18][100003], lv[100003] = {-1, };
-vector<int> v[100003], g[100003]; // v : original, g : only children
-int in[100003], out[100003], siz[100003], head[100003];
-void dfs0(int x, int p) {
-    par[0][x] = p;
-    lv[x] = lv[p] + 1;
-    for(int y : v[x])
-        if(y != p) dfs0(y, x), g[x].push_back(y);
-}
-void dfs1(int x) {
-    siz[x] = 1;
-    for(auto& y : g[x]) {
-        dfs1(y);
-        siz[x] += siz[y];
-        if(siz[y] > siz[g[x][0]]) swap(y, g[x][0]);
+int par[16][MAXN], head[MAXN], sz[MAXN], in[MAXN], out[MAXN], lv[MAXN];
+vector<int> v[MAXN];
+int dfs0(int x, int p) {
+    lv[x] = lv[p] + 1; // lv[0] = -1;
+    sz[x] = 1;
+    for(int& y : v[x]) {
+        if(y == p) continue;
+        par[0][y] = x;
+        sz[x] += dfs0(y, x);
+        if(sz[v[x][0]] < sz[y]) swap(y, v[x][0]);
     }
+    return sz[x];
 }
-void dfs2(int x) {
+void dfs1(int x, int p) {
     static int cnt = 0;
     in[x] = ++cnt;
-    for(auto y : g[x]) {
-        head[y] = (y == g[x][0] ? head[x] : y);
-        dfs2(y);
+    for(int y : v[x]) {
+        if(y == p) continue;
+        head[y] = y == v[x][0] ? head[x] : y;
+        dfs1(y, x);
     }
     out[x] = cnt;
 }
-int get_ans(int x, int p) { // lca required
+int get_query(segtree& seg, int x, int p) {
     int ret = 0;
     while(head[x] != head[p]) {
-        // range : in[head[x]]], in[x]
+        // query(in[head[x]], in[x]);
         x = par[0][head[x]];
     }
-    // range : in[p], in[x];
+    // query(in[p], in[x]);
     return ret;
 }
+// for(int i=1;i<=n;i++) if(!in[i]) head[i] = i, dfs0(i, 0), dfs1(i, 0);
 \end{minted}
 \subsection{Dominator Tree}
 \begin{minted}{cpp}
