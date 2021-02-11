@@ -320,7 +320,7 @@ ll solve(ll a, ll c, ll m, ll b, ll d, ll n) {
 $ \forall n \in \mathbb{N}\ g(n) = \sum_{d|n} f(d) \implies f(n) = \sum_{d|n} \mu(d) g(n/d) $
 \subsection{FFT}
 FFT : $
-(a_0, a_1, \cdots, a_{n-1}) \mapsto (\sum_{j=0}^{n-1}a_0 (\omega^0)^j, \sum_{j=0}^{n-1}a_1 (\omega^1)^j, \cdots, \sum_{j=0}^{n-1}a_{n-1} (\omega^{n-1})^j)
+(a_0, a_1, \cdots, a_{n-1}) \mapsto (\sum_{j=0}^{n-1}a_j (\omega^0)^j, \sum_{j=0}^{n-1}a_j (\omega^1)^j, \cdots, \sum_{j=0}^{n-1}a_j (\omega^{n-1})^j)
 $
 \begin{minted}{cpp}
 using base = complex<double>;
