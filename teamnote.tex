@@ -445,6 +445,17 @@ namespace pollard_rho{
 \end{minted}
 \subsection{Black Box Linear Algebra + Kitamasa}
 \begin{minted}{cpp}
+const int mod = 998244353;
+using lint = long long;
+lint ipow(lint x, lint p){
+	lint ret = 1, piv = x;
+	while(p){
+		if(p & 1) ret = ret * piv % mod;
+		piv = piv * piv % mod;
+		p >>= 1;
+	}
+	return ret;
+}
 vector<int> berlekamp_massey(vector<int> x){
     vector<int> ls, cur;
     int lf, ld;
