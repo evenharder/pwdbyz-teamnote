@@ -220,13 +220,21 @@ $B_n$ (\textbf{Bell number}, $n$ elem, partition)
 
 \subsection{Number Theory}
 \subsubsection{Lattice Points under Line}
+\texttt{divsum(to, c, k, m)} = $\sum_{i=0}^{\mathrm{to}-1}{\lfloor\dfrac{ki+c}{m}\rfloor}$, \texttt{modsum(to, c, k, m)} = $\sum_{i=0}^{\mathrm{to}-1}{(ki+c) \% m}$
+
 \begin{minted}{cpp}
-ll calc(ll a,ll b,ll c,ll n){
-    if(!n)return 0;
-    ll tmp=a/c*n*(n-1)/2;
-    tmp+=b/c*n;
-    return tmp+calc(c,(a*n+b)%c,a%c,((a%c)*n+b%c)/c);
-} // 0 <= x < n, 0 < y <= (a/c)x+(b/c)
+ull sumsq(ull to) { return to / 2 * ((to-1) | 1); }
+ull divsum(ull to, ull c, ull k, ull m) {
+    ull res = k / m * sumsq(to) + c / m * to;
+    k %= m; c %= m;
+    if (!k) return res;
+    ull to2 = (to * k + c) / m;
+    return res + (to - 1) * to2 - divsum(to2, m-1 - c, m, k);
+}
+ll modsum(ull to, ll c, ll k, ll m) {
+    c = ((c % m) + m) % m; k = ((k % m) + m) % m;
+    return to * c + k * sumsq(to) - m * divsum(to, c, k, m);
+}
 \end{minted}
 \subsubsection{Shanks' Baby-step Giant-step}
 \begin{minted}{cpp}
