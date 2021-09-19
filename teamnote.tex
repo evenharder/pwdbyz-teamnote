@@ -1490,11 +1490,52 @@ void dnc(int t, int l, int r, int s, int e)
 \begin{itemize}
 \item Recurrence : $ dp[i] = \min_{j<i} (dp[j] + a[i]b[j]),\ b[i-1] \leq b[i] $
 \item Think as $ dp[x = a[i]] = \min_{j<i}(b[j] \cdot x + dp[j]) $
-\item Thus push lines and find minimum (by binary search)
-\item If $ a[i] \leq a[i+1] $ sweeping is possible
-\item Intersection of $ y = a_ix +b_i $ and $ y = a_{i+1}x + b_{i+1} $ : $ x = \frac{b_{i+1}-b_i}{a_i-a_{i+1}} $
 \end{itemize}
-
+\begin{minted}{cpp}
+using ll = long long;
+struct line {
+    ll a, b, i;
+    line(ll a=0, ll b=0, ll i=0) : a(a), b(b), i(i) {}
+    ll calc(ll x) { return a*x+b;}
+    double inter(line l) {
+        return double(l.b - b) / (a - l.a);
+    }
+};
+bool check_back(line& p0, line& p1, line& p2) {
+    return (p1.b - p0.b) * (p1.a - p2.a) >= (p0.a - p1.a) * (p2.b - p1.b);
+    return p0.inter(p1) > p1.inter(p2); // double
+}
+bool check_front(ll x, line& p0, line& p1) {
+    return x * (p0.a - p1.a) >= (p1.b - p0.b);
+    return x > p0.inter(p1);
+}
+struct ConvexHull {
+    int l = 0;
+    int r = 0;
+    vector<line> v;
+    void insert(line p) {
+        while(r - l >= 2 && check_back(v[r-2], v[r-1], p))
+            v.pop_back(), r--;
+        v.push_back(p);
+    }
+    pair<ll, ll> query(ll x) { // if x is increasing, else do binary search
+        while(r - l >= 2 && check_front(x, v[l], v[l+1]))
+            l++;
+        return pair<ll, ll>{v[l].calc(x), v[l].i};
+    }
+};
+void calc() { // psuedo-code
+    ConvexHull ch;
+    ll val = 0, cnt = 0; // current dp and track
+    for(int i=0;i<N;i++) {
+        ch.insert(line{p[i], q[i]}); // j-dependent values (b[j], dp[j])
+        pll res = ch.query(x[i]);
+        val = res.first + c[i]; // i-dependent values
+        cnt = res.second + 1;
+    }
+    return pll{val, cnt};
+}
+\end{minted}
 \subsection{Centroid Decomposition}
 \begin{minted}{cpp}
 // credit : https://gist.github.com/igorcarpanese/75162f3253bd230abd0f32f9950bf384
