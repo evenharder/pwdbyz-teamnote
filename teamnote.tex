@@ -707,25 +707,17 @@ auto angle_sort = [&] (P &a, P &b){
 \end{minted}
 \subsection{Rotating Calipers}
 \begin{minted}{cpp}
-void rotating_calipers(vector<pll> CV){
-    int pos = 0;
-    for(int i = 0 ; i < CV.size() ; i++) if(CV[pos] < CV[i]) pos = i;
-
-    int ind1 = 0, ind2 = pos;
-    ll dist = (CV[ind1] - CV[ind2]) * (CV[ind1] - CV[ind2]);
-
-    auto get_v = [&](int x) { return CV[(x + 1) % CV.size()] - CV[x];};
-    for(int i = 0 ; i < CV.size() ; i++){
-        pll v = get_v(i);
-        while((-v) / get_v(pos) < 0) pos = (pos + 1) % CV.size();
-        ll tmp_dist = (CV[pos] - CV[i]) * (CV[pos] - CV[i]);
-        if(dist < tmp_dist) {
-            dist = tmp_dist;
-            ind1 = i;   ind2 = pos;
-        }
+ll rotating_calipers(vector<P> v) {
+    v = make_hull(v);
+    ll mdist = 0;
+    int j = 1, n = v.size();
+    v.insert(v.end(), v.begin(), v.end());
+    for(int i=0;i<n;i++) {
+        while((v[i+1]-v[i])/(v[j+1]-v[j]) > 0) j++;
+        for(int k=0;k<2;k++)
+            mdist = max(mdist, (v[j+k]-v[i]).dist2());
     }
-
-    printf("%lld %lld %lld %lld\n", CV[ind1].first, CV[ind1].second, CV[ind2].first, CV[ind2].second);
+    return mdist;
 }
 \end{minted}
 \subsection{Smallest Enclosing Circle}
