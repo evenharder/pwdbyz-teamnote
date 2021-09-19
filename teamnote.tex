@@ -1538,7 +1538,32 @@ int centroid(int u, int p, int r) { // r : root
     return u;
 }
 \end{minted}
-
+\subsection{Aliens Trick}
+\begin{itemize}
+\item Recurrence: $ dp[i][j] = Min_{k<j} (dp[i-1][k] + C[k+1][j]) $
+\item Condition: $ dp[*][n] $ is convex (implied if $ dp[*][n] $ is Monge array)
+\end{itemize}
+\begin{minted}{cpp}
+ll calc(...) {
+    // (...)
+    k = min(k, (int)v.size());
+    ll leff = some_min_value, reff = some_big_value; // check range and overflow
+    int lind = v.size(), rind = 1; // range of k, decreases when eff increase
+    while(reff - leff >= 2) {
+        ll meff = (leff + reff) / 2;
+        pll res = calc_with_lambda(v, meff); // {value, k'}
+        if(res.second < rind) res.second = rind; // rind (<) lind
+        if(res.second > lind) res.second = lind; // lind (>) rind
+        if(res.second == k) return res.first - k * meff;
+        else if(res.second > k) lind = res.second; leff = meff; // lind (>) rind
+        else rind = res.second; reff = meff;
+    }
+    // when minimizing, ans is max(calc_with_lambda().first - k * eff) for all eff
+    // when maximizing, calculate min instead
+    return max(calc_with_lambda(v, leff).first - k * leff,
+               calc_with_lambda(v, reff).first - k * reff);
+}
+\end{minted}
 \section{Data Structure}
 
 \subsection{Persistent Segment Tree}
