@@ -1424,14 +1424,13 @@ struct hopcroft_karp{
 \end{minted}
 
 \section{Optimization Tricks}
-
+An array $ P[i][j] $ is \textbf{Monge} array if $\forall a \leq b \leq c \leq d$, $ C[a][c] + C[b][d] \leq C[a][d] + C[b][c]$.
 \subsection{Knuth Optimization}
 \begin{itemize}
 \item Recurrence : $ D[i][j] = \min_{i<k<j}(D[i][k] + D[k][j]) + C[i][j]$
-\item Quadrangle Inequality : $ C[a][c] + C[b][d] \leq C[a][d] + C[b][c],\ a \leq b \leq c \leq d$
-\item Monotonicity : $ C[b][c] \leq C[a][d],\ a \leq b \leq c \leq d$
+\item Condition : $\forall a \leq b \leq c \leq d$, $C[i][j]$ is Monge array  and $ C[b][c] \leq C[a][d]$ (monotonic)
 \item $ A[i][j] = $ (min. $ k $ \textit{s.t.} $ D[i][j] $ is min.). Then $ A[i][j-1] \leq A[i][j] \leq A[i+1][j]$
-\item $ O(N^2) $ time complexity
+\item Time Complexity: $ O(N^3) \to O(N^2) $
 \end{itemize}
 \begin{minted}{cpp}
 // opt[i-1][i] = i
@@ -1448,10 +1447,10 @@ for(int d=2;d<=n;d++) {
 \subsection{Divide and Conquer Optimization}
 \begin{itemize}
 \item Recurrence : $ D[t][i] = \min_{k<i} (D[t-1][k] + C[k][i]) $
-\item Min index : $ A[t][i] \leq A[t][i+1] $ ($ A[t][i] = $ (min. $ k $ \textit{s.t.} $ D[t][i] $ is min.))
-\item Quadrangle Inequality : $ C[a][c] + C[b][d] \leq C[a][d] + C[b][c],\ a \leq b \leq c \leq d$
+\item Condition: $ C[i][j] $ is Monge array.
+\item $ A[t][i] \leq A[t][i+1] $ ($ A[t][i] = $ (min. $ k $ \textit{s.t.} $ D[t][i] $ is min.)) holds
 \item Able to Divide and Conquer base on calculating $ D[t][i] $
-\item $ O(T N \lg N) $ time complexity
+\item Time Complexity: $ O(TN^2) \to O(TN \lg N) $
 \end{itemize}
 \begin{minted}{cpp}
 // range of index : [l,r]
@@ -1473,18 +1472,17 @@ void dnc(int t, int l, int r, int s, int e)
 \end{minted}
 \subsection{Convex Hull Trick}
 \begin{itemize}
-\item Recurrence : $ dp[i] = \min_{j<i} (dp[j] + a[i]b[j]),\ b[i-1] \leq b[i] $
-\item Think as $ dp[x = a[i]] = \min_{j<i}(b[j] \cdot x + dp[j]) $
+\item Recurrence : $ dp[i] = \min_{j<i} (dp[j] + a[i]b[j])$
+\item Condition: None, but usually $ b[i] $ is monotonic. If not, refer to Section \ref{ss:dynamic-convex-hull}.
+\item Time Complexity: $ O(N^2) \to O(N \lg N) $, $ O(N) $ if $ a[i] $ is monotonic by taking valid front.
 \end{itemize}
 \begin{minted}{cpp}
 using ll = long long;
 struct line {
     ll a, b, i;
     line(ll a=0, ll b=0, ll i=0) : a(a), b(b), i(i) {}
-    ll calc(ll x) { return a*x+b;}
-    double inter(line l) {
-        return double(l.b - b) / (a - l.a);
-    }
+    ll calc(ll x) { return a*x+b; }
+    double inter(line l) { return double(l.b - b) / (a - l.a); }
 };
 bool check_back(line& p0, line& p1, line& p2) {
     return (p1.b - p0.b) * (p1.a - p2.a) >= (p0.a - p1.a) * (p2.b - p1.b);
@@ -1495,8 +1493,7 @@ bool check_front(ll x, line& p0, line& p1) {
     return x > p0.inter(p1);
 }
 struct ConvexHull {
-    int l = 0;
-    int r = 0;
+    int l = 0, r = 0;
     vector<line> v;
     void insert(line p) {
         while(r - l >= 2 && check_back(v[r-2], v[r-1], p))
@@ -1746,7 +1743,7 @@ void cut(node *p){
 }
 \end{minted}
 
-\subsection{Dynamic Convex Hull}
+\subsection{Dynamic Convex Hull}\label{ss:dynamic-convex-hull}
 \begin{minted}{cpp}
 // https://github.com/niklasb/contest-algos/blob/master/convex_hull/dynamic.cpp
 const ll is_query = -(1LL<<62);
