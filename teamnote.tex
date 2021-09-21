@@ -1251,36 +1251,34 @@ const int INF = 1e9;
 struct MCMF {
     struct edge {
         int there, cap, cost, rev;
-
         edge() : there(0), cap(0), cost(0), rev(0) {}
-        edge(int there, int cap, int cost, int rev) : there(there), cap(cap), 
-            cost(cost), rev(rev) {}
+        edge(int there, int cap, int cost, int rev)
+            : there(there), cap(cap), cost(cost), rev(rev) {}
     };
-
     int N;
     vector<vector<edge>> ADJ;
     vector<int> R, INQ, C, I;
 
     MCMF() : N(0) {}
-    MCMF(int N) : N(N) { ADJ.resize(N + 1); R.resize(N + 1); INQ.resize(N + 1);
-        C.resize(N + 1); I.resize(N + 1); }
+    MCMF(int N) : N(N), ADJ(N + 1), R(N + 1), INQ(N + 1), C(N + 1), I(N + 1) {}
 
     void CE(int i, int j, int cap, int cost) {
         ADJ[i].push_back(edge(j, cap, cost, ADJ[j].size()));
         ADJ[j].push_back(edge(i, 0, -cost, ADJ[i].size() - 1));
     }
+
     bool SPFA(int src, int sink) {
         queue<int> Q;    Q.push(src);
         fill(R.begin(), R.end(), -1);       R[src] = 0;
-        fill(C.begin(), C.end(), -1);       C[src] = 0;
+        fill(C.begin(), C.end(), INF);      C[src] = 0;
         fill(INQ.begin(), INQ.end(), 0);    INQ[src] = 1;
         while (Q.size()) {
             int here = Q.front();    Q.pop();
             INQ[here] = 0;
             for (int i = 0; i < ADJ[here].size(); i++) {
                 auto e = ADJ[here][i];
-                if ((C[e.there] == -1 || C[e.there] > C[here] + e.cost)
-                    && e.cap > 0) {
+                if ((C[e.there] == INF || C[e.there] > C[here] + e.cost) &&
+                    e.cap > 0) {
                     C[e.there] = C[here] + e.cost;
                     R[e.there] = here;
                     I[e.there] = i;
@@ -1288,13 +1286,13 @@ struct MCMF {
                 }
             }
         }
-        if (C[sink] == -1) return false;
+        if (C[sink] == INF) return false;
         return true;
     }
 
-    pii mcmf(int src, int sink) {
-        pii ret = { 0, 0 };
-        while (SPFA(src, sink)) {
+    pii mcmf(int src, int sink, int ff) {
+        pii ret = {0, 0};
+        while (ret.first < ff && SPFA(src, sink)) {
             int flow = INF, cost = 0;
             for (int here = sink; here != src; here = R[here])
                 flow = min(flow, ADJ[R[here]][I[here]].cap);
@@ -1304,6 +1302,7 @@ struct MCMF {
                 e.cap -= flow;
                 ADJ[e.there][e.rev].cap += flow;
             }
+            if (cost >= 0) break;
             ret.first += flow, ret.second += cost;
         }
         return ret;
