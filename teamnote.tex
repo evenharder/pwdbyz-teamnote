@@ -1182,22 +1182,19 @@ int solve(int n, vector<vector<int>> adj){
 
 \subsection {Dinic's Algorithm}
 \begin{minted}{cpp}
-const int INF = 1e9;
+template<typename T>
 struct Dinic{
+    const T INF = 1e9;
     int N;
     struct edge{
-        int index, cap, rev;
-        edge() : index(0), cap(0), rev(0) {}
-        edge(int index, int cap, int rev) : index(index), cap(cap), rev(rev) {}
+        T index, cap, rev;
+        edge(T index=0, T cap=0, T rev=0) : index(index), cap(cap), rev(rev) {}
     };
 
     vector<vector<edge>> ADJ;
     vector<int> R, W;
 
-    Dinic() {}
-    Dinic(int N) : N(N){
-        ADJ.resize(N);  R.resize(N);    W.resize(N);
-    }
+    Dinic(int N=0) : N(N), ADJ(N), R(N), W(N) {}
 
     void CE(int node1, int node2, int cap){
         ADJ[node1].push_back(edge(node2, cap, ADJ[node2].size()));
@@ -1205,9 +1202,8 @@ struct Dinic{
     }
 
     bool bfs(int src, int sink){
-        fill(R.begin(), R.end(), -1);
-        R[src] = 0;
-        queue<int> Q; Q.push(src);
+        fill(R.begin(), R.end(), -1);   R[src] = 0;
+        queue<int> Q;   Q.push(src);
         while(Q.size()){
             int here = Q.front();   Q.pop();
             for(auto e : ADJ[here]){
@@ -1218,27 +1214,27 @@ struct Dinic{
         return R[sink] != -1;
     }
 
-    int dfs(int here, int sink, int f){
+    T dfs(int here, int sink, T f){
         if(here == sink) return f;
         for(int &i = W[here] ; i < ADJ[here].size() ; i++){
             auto &e = ADJ[here][i];
             if(e.cap > 0 && R[here] < R[e.index]){
-                int res = dfs(e.index, sink, min(f, e.cap));
+                T res = dfs(e.index, sink, min(f, e.cap));
                 if(res) {
                     e.cap -= res;
                     ADJ[e.index][e.rev].cap += res;
-                    return res; 
+                    return res;
                 }
             }
         }
         return 0;
     }
 
-    int solve(int src, int sink){
-        int ret = 0;
+    T solve(int src, int sink){
+        T ret = 0;
         while(bfs(src, sink)){
             fill(W.begin(), W.end(), 0);
-            int res;
+            T res;
             while((res = dfs(src, sink, INF))) ret += res;
         }
         return ret;
