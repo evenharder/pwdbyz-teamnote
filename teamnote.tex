@@ -1290,9 +1290,9 @@ struct MCMF {
         return true;
     }
 
-    pii mcmf(int src, int sink, int ff) {
+    pii mcmf(int src, int sink) {
         pii ret = {0, 0};
-        while (ret.first < ff && SPFA(src, sink)) {
+        while (SPFA(src, sink)) {
             int flow = INF, cost = 0;
             for (int here = sink; here != src; here = R[here])
                 flow = min(flow, ADJ[R[here]][I[here]].cap);
@@ -1302,7 +1302,6 @@ struct MCMF {
                 e.cap -= flow;
                 ADJ[e.there][e.rev].cap += flow;
             }
-            if (cost >= 0) break;
             ret.first += flow, ret.second += cost;
         }
         return ret;
