@@ -761,8 +761,39 @@ double ans = 0; // ans : double area
 for(int i=0;i<points.size();i++)
     ans += points[i] / points[(i+1 == points.size() ? 0 : i+1)];
 \end{minted}
-
-\newpage
+\subsection{Half Plane Intersection}
+\begin{minted}{cpp}
+vector<P> v;
+struct line {
+    P a, v;
+    using intersect = pair<int, P>;
+    intersect getIntersect(const line &o) {
+        double x = v / o.v;
+        if(abs(x) < eps) return intersect(0, P(0, 0));
+        return intersect(1, a + v.mult((1 / x) * ((o.a - a) / o.v)));
+    }
+};
+bool g(line &a, line &b, line &c) {
+    P p;
+    tie(ignore, p) = a.getIntersect(b);
+    return (c.v / (p - c.a)) > 0;
+}
+bool f(int d) {
+    vector<line> lines;
+    for(int i = 0 ; i < N ; i++) {
+        int r = (i + d + 1) % N;
+        lines.push_back({v[i], v[r] - v[i]});
+    }
+    deque<line> dq;
+    for(auto l : lines) {
+        while(dq.size() >= 2 && g(dq[(int)dq.size() - 1], dq[(int)dq.size() - 2], l)) dq.pop_back();
+        while(dq.size() >= 2 && g(dq[0], dq[1], l)) dq.pop_front();
+        if(dq.size() >= 2 && g(dq[(int)dq.size() - 1], l, dq[0])) continue;
+        dq.push_back(l);
+    }
+    return dq.size() < 3;
+}
+\end{minted}
 \section{Strings}
 
 \subsection{Aho-Corasick Algorithm}
