@@ -720,30 +720,7 @@ ll rotating_calipers(vector<P> v) {
     return mdist;
 }
 \end{minted}
-\subsection{Smallest Enclosing Circle}
-\begin{minted}{cpp}
-//Prove By Solving - https://www.acmicpc.net/problem/11930
-int main(){
-    scanf("%d", &N);
-    for(int i = 1 ; i <= N ; i++) scanf("%lf%lf%lf", &A[i].x, &A[i].y, &A[i].z);
 
-    int t = 70000;
-    double rate = 1.0;
-    point cur = (point){0, 0, 0};
-    for(int i = 1 ; i <= t; i++){
-        int ind = 1;
-        for(int j = 1 ; j <= N ; j++)
-        if( (A[j] - cur) * (A[j] - cur) >
-            (A[ind] - cur)  * (A[ind] - cur)) ind = j;
-        cur = cur + (A[ind] - cur).mult(rate);
-        rate *= 0.99;
-    }
-    double r = 0;
-    for(int i = 1 ; i <= N ; i++) r = max(r, (A[i] - cur) * (A[i] - cur));
-    cout << setprecision(10) << fixed << sqrt(r);
-    return 0;
-} // Non-deterministic, deterministic O(n lg n) requires Voronoi diagram
-\end{minted}
 \subsection{Circumcircle}
 \begin{minted}{cpp}
 double cc_radius(P& A, P& B, P& C){
@@ -755,6 +732,7 @@ P cc_center(P& A, P& B, P& C){
     return A + (b.mult(c.dist2()) - c.mult(b.dist2())).perp().mult(0.5/(b/c));
 }
 \end{minted}
+
 \subsection{Polygon Area}
 \begin{minted}{cpp}
 double ans = 0; // ans : double area
@@ -794,6 +772,28 @@ bool f(int d) {
     return dq.size() < 3;
 }
 \end{minted}
+
+\subsection{Smallest Enclosing Circle}
+\begin{minted}{cpp}
+int main(){
+    scanf("%d", &N);
+    for(int i = 1 ; i <= N ; i++) scanf("%lf%lf%lf", &A[i].x, &A[i].y, &A[i].z);
+    int t = 70000;
+    double rate = 1.0;
+    point cur = (point){0, 0, 0};
+    for(int i = 1 ; i <= t; i++){
+        int ind = 1;
+        for(int j = 1 ; j <= N ; j++)
+        if( (A[j] - cur) * (A[j] - cur) > (A[ind] - cur)  * (A[ind] - cur)) ind = j;
+        cur = cur + (A[ind] - cur).mult(rate);
+        rate *= 0.99;
+    }
+    double r = 0;
+    for(int i = 1 ; i <= N ; i++) r = max(r, (A[i] - cur) * (A[i] - cur));
+    cout << setprecision(10) << fixed << sqrt(r);
+    return 0;
+} // Non-deterministic, deterministic O(n lg n) requires Voronoi diagram
+\end{minted}
 \section{Strings}
 
 \subsection{Aho-Corasick Algorithm}
@@ -801,8 +801,7 @@ bool f(int d) {
 // required macro : rep, repi, setz
 namespace aho_corasick {
     const int MAXN = 200002, MAXC = 26;
-    int go[MAXN+1][MAXC];
-    int fail[MAXN+1];
+    int go[MAXN+1][MAXC], fail[MAXN+1];
     bool term[MAXN+1];
 
     void build(const vector<string> &v) {
@@ -845,15 +844,44 @@ namespace aho_corasick {
         int p = 0;
         repi(i, t) {
             char c = i-'a'; // check starting alphabet
-            p = max(0, step(p, c));
+            p = max(0, step(p, c)); // directly access next including fail
             /* if you need the original trie, use this or make length array
             while(p and not go[p][c]) p = fail[p];
-            p = max(0, go[p][c]);
-            */
+            p = max(0, go[p][c]); */
             if (term[p]) return true;
         }
         return false;
     }
+}
+\end{minted}
+
+\subsection{Manacher's Algorithm}
+\begin{minted}{cpp}
+// 0-based
+// s   = # h # e # l # l # o #
+// ret = 0 1 0 1 0 1 2 1 0 1 0
+
+vector<int> manacher(const string& s) {
+    int n = s.size(), r = -1, k = -1;
+    vector<int> p(n);
+    for (int i=0; i<n; i++) {
+        if (i<=r) p[i] = min(r-i, p[2*k-i]);
+        while (i-p[i]-1>=0 and i+p[i]+1<n and s[i-p[i]-1] == s[i+p[i]+1]) p[i]++;
+        if (r < i+p[i]) r = i+p[i], k = i;
+    }
+    return p;
+}
+\end{minted}
+
+\subsection{Lexicographically Smallest String Rotation}
+\begin{minted}{cpp}
+int min_rotation(string s) {
+    int a=0, N=s.size(); s += s;
+    rep(b,N) rep(i,N) {
+        if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
+        if (s[a+i] > s[b+i]) { a = b; break; }
+    }
+    return a; // rotate(v.begin(), v.begin()+min_rotation(v), v.end());
 }
 \end{minted}
 
@@ -904,34 +932,6 @@ vector<int> make_lcp(const string& s, const vector<int>& sa) {
         if(len) len--;
     }
     return lcp;
-}
-\end{minted}
-\subsection{Lexicographically Smallest String Rotation}
-\begin{minted}{cpp}
-int min_rotation(string s) {
-    int a=0, N=s.size(); s += s;
-    rep(b,N) rep(i,N) {
-        if (a+i == b || s[a+i] < s[b+i]) {b += max(0, i-1); break;}
-        if (s[a+i] > s[b+i]) { a = b; break; }
-    }
-    return a; // rotate(v.begin(), v.begin()+min_rotation(v), v.end());
-}
-\end{minted}
-\subsection{Manacher's Algorithm}
-\begin{minted}{cpp}
-// 0-based
-// s   = # h # e # l # l # o #
-// ret = 0 1 0 1 0 1 2 1 0 1 0
-
-vector<int> manacher(const string& s) {
-    int n = s.size(), r = -1, k = -1;
-    vector<int> p(n);
-    for (int i=0; i<n; i++) {
-        if (i<=r) p[i] = min(r-i, p[2*k-i]);
-        while (i-p[i]-1>=0 and i+p[i]+1<n and s[i-p[i]-1] == s[i+p[i]+1]) p[i]++;
-        if (r < i+p[i]) r = i+p[i], k = i;
-    }
-    return p;
 }
 \end{minted}
 
@@ -1197,7 +1197,7 @@ int solve(int n, vector<vector<int>> adj){
     return ans;
 }
 \end{minted}
-\clearpage
+
 \section{Network Flow}
 
 \subsection{Theorems}
