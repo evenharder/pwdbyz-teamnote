@@ -1560,54 +1560,47 @@ ll calc(...) {
 \subsection{Persistent Segment Tree}
 \begin{minted}{cpp}
 const MAXN = 1e5 + 10;
-struct node{
+struct node {
     node *l, *r;
-    int cnt;
-    node () {}  
-} pool[(1 << 17) * 17], *tree_head[MAXN];
+    int val;
+};
 
-int tcnt;
-node* alloc(){
-    memset(pool + tcnt, 0, sizeof(node));
-    return pool + tcnt++;
+int pcnt;
+node pool[MAXN * 22];
+node head[MAXN];
+node* alloc() {
+    memset(pool + pcnt, 0, sizeof(node));
+    return pool + pcnt++;
 }
 
-node * init(int l, int r){
-    node *ret = alloc();
-    if(l != r) {
-        int mid = (l + r) / 2;
-        ret->l = init(l, mid);
-        ret->r = init(mid + 1, r);
-    }
-    return ret;
+void init(node *here, int l, int r){
+    if(l == r) return;
+    
+    int mid = (l + r) / 2;
+    here->l = alloc();
+    here->r = alloc();
+    
+    init(here->l, l, mid);
+    init(here->r, mid + 1, r);
 }
 
-void update(node * here, node *par, int l, int r, int val){
-    if(l == r) {
-        here->cnt = par->cnt + 1;
-        return;
-    }
+void update(node *par, node *here, int l, int r, int pos, int val){
+    here->val += val;
+    if(l == r) return;
 
     int mid = (l + r) / 2;
-    if(val <= mid){
+    here->l = par->l;
+    here->r = par->r;
+    if(pos <= mid) {
         here->l = alloc();
-        here->r = par->r;
-        update(here->l, par->l, l, mid, val);
+        here->l->val = par->l->val;
+        update(par->l, here->l, l, mid, pos, val);
     }
     else {
-        here->l = par->l;
         here->r = alloc();
-        update(here->r, par->r, mid + 1, r, val);
+        here->r->val = par->r->val;
+        update(par->r, here->r, mid + 1, r, pos, val);
     }
-    here->cnt = here->l->cnt + here->r->cnt;
-}
-
-int query(node *node1, node *node2, int l, int r, int k){
-    if(l == r) return l;
-    int ccc = node1->l->cnt - node2->l->cnt;
-    int mid = (l + r) / 2;
-    if(k <= ccc) return query(node1->l, node2->l, l, mid, k);
-    else return query(node1->r, node2->r, mid + 1, r, k - ccc);
 }
 \end{minted}
 
